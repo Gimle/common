@@ -787,3 +787,76 @@ function get_xml ($url, $ttl = 600) {
 	}
 	return $return;
 }
+
+/**
+ * Get full translation table.
+ *
+ * @return array
+ */
+function get_html_translation_table () {
+	$table = array();
+	foreach (\get_html_translation_table(HTML_ENTITIES, null, mb_internal_encoding()) as $key => $value) {
+		$table[$value] = $key;
+	}
+	if ((PHP_MAJOR_VERSION >= 5) && (PHP_MINOR_VERSION >= 4)) {
+		foreach (\get_html_translation_table(HTML_ENTITIES, ENT_HTML5 | ENT_QUOTES, mb_internal_encoding()) as $key => $value) {
+			$table[$value] = $key;
+		}
+	}
+	else {
+		require System::$config['extensions']['common'] . 'inc' . DIRECTORY_SEPARATOR . 'ent.php';
+		$table = array_merge($table, $html5);
+	}
+	$table['&ap;'] = '≈';
+	$table['&dash;'] = '‐';
+	$table['&lsqb;'] = '[';
+	$table['&lsquor;'] = '‚';
+	$table['&rdquor;'] = '„';
+	$table['&there;'] = '∴';
+	$table['&verbar;'] = '|';
+
+	return $table;
+}
+
+/**
+ * Convert code to utf-8.
+ *
+ * @param int $num
+ * @return string
+ */
+function code2utf8 ($num) {
+	if ($num < 128) {
+		return chr($num);
+	}
+	if ($num < 2048) {
+		return chr(($num >> 6) + 192) . chr(($num & 63) + 128);
+	}
+	if ($num < 65536) {
+		return chr(($num >> 12) + 224) . chr((($num >> 6) & 63) + 128) . chr(($num & 63) + 128);
+	}
+	if ($num < 2097152) {
+		return chr(($num >> 18) + 240) . chr((($num >> 12) & 63) + 128) . chr((($num >> 6) & 63) + 128) . chr(($num & 63) + 128);
+	}
+	return '';
+}
+
+/**
+ * Convert entities to utf8.
+ *
+ * @param string $string
+ * @param array $exclude
+ */
+function ent2utf8 ($string, $exclude = array ('&', ';')) {
+	$html_translation_table = array();
+	foreach (get_html_translation_table() as $key => $value) {
+		if (!in_array($value, $exclude)) {
+			$html_translation_table[$key] = $value;
+		}
+	}
+	$string = strtr($string, $html_translation_table);
+
+	$string = preg_replace('~&#x([0-9a-f]+);~ei', '\\' . __NAMESPACE__ . '\\code2utf8(hexdec("\\1"))', $string);
+	$string = preg_replace('~&#([0-9]+);~e', '\\' . __NAMESPACE__ . '\\code2utf8(\\1)', $string);
+
+	return $string;
+}
