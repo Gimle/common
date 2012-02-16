@@ -147,6 +147,20 @@ class Cache {
 		else {
 			self::$prepend = System::$config['cache']['dir'];
 		}
+
+		if (isset(System::$config['cache']['umask'])) {
+			$oldumask = umask(System::$config['cache']['umask']);
+		}
+
+		if (isset(System::$config['cache']['chmod']['dir'])) {
+			$chmod = System::$config['cache']['chmod']['dir'];
+		}
+		else {
+			$chmod = 0777;
+		}
+		if (!file_exists(self::$prepend)) {
+			mkdir(self::$prepend, $chmod, true);
+		}
 		if ((!is_writable(self::$prepend)) || (!is_readable(self::$prepend))) {
 			trigger_error('Access to cache dir "' . self::$prepend . '" fail.', E_USER_WARNING);
 		}
