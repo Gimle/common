@@ -11,6 +11,87 @@
  */
 class Canvas {
 	/**
+	 * @var string
+	 */
+	private static $title = '';
+
+	/**
+	 * @var string
+	 */
+	private static $template = '';
+
+	/**
+	 * @var array
+	 */
+	private static $magic = array();
+
+	/**
+	 * Setup a canvas temple, and enable late variable bindings.
+	 *
+	 * @param string $template
+	 * @return void
+	 */
+	public static function start ($template) {
+		self::$template = $template;
+		ob_start();
+		return;
+	}
+
+	/**
+	 * Set or get title.
+	 *
+	 * @param false|string $title false to get, or string to set.
+	 * @param boolean $append
+	 * @return string|void
+	 */
+	public static function title ($title = false, $append = false) {
+		if ($title === false) {
+			return self::$title;
+		}
+		elseif ($append === true) {
+			self::$title .= $title;
+		}
+		else {
+			self::$title = $title;
+		}
+		return;
+	}
+
+	/**
+	 * Create the canvas from template.
+	 *
+	 * @return void
+	 */
+	public static function create () {
+		$content = ob_get_contents();
+		ob_end_clean();
+
+		$template = self::$template;
+		$replaces = array('%title%', '%content%');
+		$withs = array(self::$title, $content);
+		if (!empty(self::$magic)) {
+			foreach (self::$magic as $replace => $with) {
+				if (is_array($with)) {
+					$with = implode("\n", $with);
+				}
+				$replaces[] = '%' . $replace . '%';
+				$withs[] = $with;
+			}
+		}
+		preg_match_all('/%[a-z]+%/', $template, $matches);
+		if (!empty($matches)) {
+			foreach ($matches[0] as $match) {
+				if (!in_array($match, $replaces)) {
+					$template = str_replace($match, '', $template);
+				}
+			}
+		}
+		$template = str_replace($replaces, $withs, $template);
+
+		echo $template;
+	}
+
+	/**
 	 * Create CSS and JavaScript caches.
 	 *
 	 * @param boolean $cacheJS
@@ -108,5 +189,28 @@ class Canvas {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Set or get custom variables.
+	 *
+	 * @param string $method
+	 * @param array $params
+	 * @return mixed
+	 */
+	public static function __callstatic ($method, $params) {
+		if (empty($params)) {
+			if (isset(self::$magic[$method])) {
+				return self::$magic[$method];
+			}
+			return false;
+		}
+		if (!isset($params[1])) {
+			self::$magic[$method][] = $params[0];
+		}
+		else {
+			self::$magic[$method][$params[1]] = $params[0];
+		}
+		return;
 	}
 }
