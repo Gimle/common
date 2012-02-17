@@ -15,7 +15,7 @@ class Mysql {
 	 *
 	 * @var array
 	 */
-	private static $_sqlconnections = array();
+	private static $sqlconnections = array();
 
 	/**
 	 * Create a new or return already initialized database object.
@@ -24,10 +24,10 @@ class Mysql {
 	 * @return object Database object.
 	 */
 	public static function get ($key) {
-		if ((!array_key_exists($key, self::$_sqlconnections)) || (!self::$_sqlconnections[$key] instanceof Mysql2)) {
-			self::$_sqlconnections[$key] = new Mysqlicore(System::$config['mysql'][$key]);
+		if ((!array_key_exists($key, self::$sqlconnections)) || (!self::$sqlconnections[$key] instanceof Mysql2)) {
+			self::$sqlconnections[$key] = new Mysqlicore(System::$config['mysql'][$key]);
 		}
-		return self::$_sqlconnections[$key];
+		return self::$sqlconnections[$key];
 	}
 }
 
