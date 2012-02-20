@@ -860,3 +860,31 @@ function ent2utf8 ($string, $exclude = array ('&', ';')) {
 
 	return $string;
 }
+
+/**
+ * Get the users preferred language, or false if not found.
+ *
+ * @param array $avail A list of the available languages.
+ * @return false|string
+ */
+function get_preferred_language (array $avail) {
+	$return = false;
+	if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+		$client = explode(',', strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
+		$hitrate = 0;
+		if (!empty($client)) {
+			foreach ($client as $langstr) {
+				if (preg_match('/(.*);q=([0-1]{0,1}\.\d{0,4})/', $langstr, $matches)) {
+					if (($hitrate < (float)$matches[2]) && (in_array($matches[1], $avail))) {
+						$return = $matches[1];
+						$hitrate = (float)$matches[2];
+					}
+				}
+				elseif (in_array($langstr, $avail)) {
+					return $langstr;
+				}
+			}
+		}
+	}
+	return $return;
+}
