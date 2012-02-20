@@ -795,8 +795,15 @@ function get_xml ($url, $ttl = 600) {
  */
 function get_html_translation_table () {
 	$table = array();
-	foreach (\get_html_translation_table(HTML_ENTITIES, null, mb_internal_encoding()) as $key => $value) {
-		$table[$value] = $key;
+	if ((PHP_MAJOR_VERSION >= 5) && (PHP_MINOR_VERSION >= 3) && (PHP_RELEASE_VERSION >= 3)) {
+		foreach (\get_html_translation_table(HTML_ENTITIES) as $key => $value) {
+			$table[$value] = utf8_encode($key);
+		}
+	}
+	else {
+		foreach (\get_html_translation_table(HTML_ENTITIES, null, mb_internal_encoding()) as $key => $value) {
+			$table[$value] = $key;
+		}
 	}
 	if ((PHP_MAJOR_VERSION >= 5) && (PHP_MINOR_VERSION >= 4)) {
 		foreach (\get_html_translation_table(HTML_ENTITIES, ENT_HTML5 | ENT_QUOTES, mb_internal_encoding()) as $key => $value) {
