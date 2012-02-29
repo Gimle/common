@@ -24,7 +24,7 @@ class Mysql {
 	 * @return object Database object.
 	 */
 	public static function get ($key) {
-		if ((!array_key_exists($key, self::$sqlconnections)) || (!self::$sqlconnections[$key] instanceof Mysql2)) {
+		if ((!array_key_exists($key, self::$sqlconnections)) || (!self::$sqlconnections[$key] instanceof Mysqlicore)) {
 			self::$sqlconnections[$key] = new Mysqlicore(System::$config['mysql'][$key]);
 		}
 		return self::$sqlconnections[$key];
