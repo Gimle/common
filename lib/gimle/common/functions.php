@@ -439,7 +439,7 @@ function run_time () {
 function bytes_to_array ($filesize = 0, $decimals = 2) {
 	$return = array();
 	$count = 0;
-	$units = array('', 'k', 'M', 'T', 'P', 'E', 'Z', 'Y');
+	$units = array('', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y');
 	while ((($filesize / 1024) >= 1) && ($count < (count($units) - 1))) {
 		$filesize = $filesize / 1024;
 		$count++;
@@ -853,7 +853,7 @@ function code2utf8 ($num) {
  * @param string $string
  * @param array $exclude
  */
-function ent2utf8 ($string, $exclude = array ('&', ';')) {
+function ent2utf8 ($string, $exclude = array('&', ';')) {
 	$html_translation_table = array();
 	foreach (get_html_translation_table() as $key => $value) {
 		if (!in_array($value, $exclude)) {
