@@ -335,21 +335,23 @@ class Mysqliresult {
 			$finfo[$tmp->name] = $tmp->type;
 			unset($tmp);
 		}
-		$return = array();
-		while ($result = $this->fetch_assoc()) {
-			foreach ($result as $key => $value) {
-				if ($result[$key] === null) {
-				}
-				elseif (in_array($finfo[$key], array(1, 2, 3, 8, 9))) {
-					$result[$key] = (int)$result[$key];
-				}
-				elseif (in_array($finfo[$key], array(4, 5, 246))) {
-					$result[$key] = (float)$result[$key];
-				}
-			}
-			$return[] = $result;
+		$result = $this->fetch_assoc();
+		if ($result === null) {
+			return false;
 		}
-		return $return;
+
+		foreach ($result as $key => $value) {
+			if ($result[$key] === null) {
+			}
+			elseif (in_array($finfo[$key], array(1, 2, 3, 8, 9))) {
+				$result[$key] = (int)$result[$key];
+			}
+			elseif (in_array($finfo[$key], array(4, 5, 246))) {
+				$result[$key] = (float)$result[$key];
+			}
+		}
+
+		return $result;
 	}
 
 	/**
