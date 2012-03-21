@@ -20,9 +20,18 @@ class System {
 	/**
 	 * Array containing values from the config files.
 	 *
+	 * This variable should not be modified. Use $settings instead.
+	 *
 	 * @var array
 	 */
 	public static $config = array();
+
+	/**
+	 * Array to store glabal settings.
+	 *
+	 * @var array
+	 */
+	public static $settings = array();
 
 	/**
 	 * Autoload.
