@@ -821,6 +821,9 @@ function get_html_translation_table () {
 	$table['&rdquor;'] = '„';
 	$table['&there;'] = '∴';
 	$table['&verbar;'] = '|';
+	$table['&rsquo;'] = '’';
+	$table['&Omega;'] = 'Ω';
+	$table['&omega;'] = 'ω';
 
 	return $table;
 }
@@ -894,4 +897,30 @@ function get_preferred_language (array $avail) {
 		}
 	}
 	return $return;
+}
+
+/**
+ * Create a empty temp file with unique name.
+ *
+ * @param string $dir optional
+ * @param string $prefix optional
+ * @param string $suffix optional
+ * @return string full path and name of the new temp file.
+ */
+function make_temp_file ($dir = false, $prefix = false, $suffix = false) {
+	$name = generate_password();
+	if ($dir === false) {
+		$dir = TEMP_DIR;
+	}
+	if ($prefix !== false) {
+		$name = $prefix . $name;
+	}
+	if ($suffix !== false) {
+		$name = $name . $suffix;
+	}
+	if (!file_exists($dir . $name)) {
+		touch($dir . $name);
+		return $dir . $name;
+	}
+	return tempfile($dir, $prefix, $suffix);
 }
