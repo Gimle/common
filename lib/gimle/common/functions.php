@@ -125,10 +125,10 @@ function var_dump ($var, $return = false, $title = false, $mode = 'auto') {
 		}
 		elseif (is_string($var)) {
 			if ((isset($params['error'])) && ($params['error'] === true)) {
-				echo ' ' . colorize('=', 'black', $background) . ' ' . colorize('Error: ' . $fixDumpString($var_name, $var, false), 'error', $background);
+				echo ' ' . colorize('=', 'black', $background) . ' ' . colorize('Error: ' . $fixDumpString($var_name, $var, ENV_WEB), 'error', $background);
 			}
 			else {
-				echo ' ' . colorize('=', 'black', $background) . ' ' . colorize('String(' . strlen($var) . ')', 'gray', $background) . ' ' . colorize('\'' . $fixDumpString($var_name, $var) . '\'', 'string', $background);
+				echo ' ' . colorize('=', 'black', $background) . ' ' . colorize('String(' . strlen($var) . ')', 'gray', $background) . ' ' . colorize('\'' . $fixDumpString($var_name, $var, ENV_WEB) . '\'', 'string', $background);
 			}
 		}
 		elseif (is_int($var)) {
