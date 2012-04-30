@@ -1,6 +1,12 @@
 <?php
 /**
+ * html5 entities.
+ */
+
+/**
  * Array with the html5 entities.
+ *
+ * @var array
  */
 $html5 = array(
 	'&Tab;'                    => "\t",
