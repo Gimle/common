@@ -1,10 +1,14 @@
-<?php namespace gimle\common;
+<?php
 /**
+ * MySQL Utilities.
+ *
  * @copyright Copyright (c) 2012, Tux Solbakk
  * @license http://opensource.org/licenses/bsd-license.php BSD 2-Clause License
  * @link http://gimlé.org/extensions/common/
  * @package data_utilities
  */
+
+namespace gimle\common;
 
 /**
  * MySQL Utilities class.
@@ -75,8 +79,8 @@ class Mysqlicore extends \mysqli {
 	/**
 	 * Turn Mysql cache on or off.
 	 *
-	 * @param bool|null $mode true = on, false = off, null (Default) = return current state.
-	 * @return bool|array
+	 * @param mixed $mode bool|null true = on, false = off, null (Default) = return current state.
+	 * @return mixed bool|array
 	 */
 	public function cache ($mode = null) {
 		if ($mode === true) {
@@ -96,8 +100,8 @@ class Mysqlicore extends \mysqli {
 	 * @see mysqli::query()
 	 *
 	 * @param string $query
-	 * @param null|string $resultmode
-	 * @return bool|object
+	 * @param mixed $resultmode null|string
+	 * @return mixed bool|object
 	 */
 	public function query ($query, $resultmode = null) {
 		$t = microtime(true);
@@ -271,6 +275,7 @@ class Mysqlicore extends \mysqli {
 	 * Find callee.
 	 *
 	 * @param string $function
+	 * @return string
 	 */
 	private function debug_backtrace ($function) {
 		if (ini_get('html_errors') === '') {
@@ -317,7 +322,7 @@ class Mysqliresult {
 	/**
 	 * Create a new mysqli_result object.
 	 *
-	 * @param object $result mysqli_result Object
+	 * @param \mysqli_result $result mysqli_result Object
 	 * @return object mysqli_result Object
 	 */
 	public function __construct (\mysqli_result $result) {
@@ -369,7 +374,7 @@ class Mysqliresult {
 	 * Set a value.
 	 *
 	 * @param string $name
-	 * @package mixed $value
+	 * @param mixed $value
 	 * @return void
 	 */
 	public function __set ($name, $value) {

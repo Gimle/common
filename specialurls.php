@@ -1,10 +1,14 @@
-<?php namespace gimle\common;
+<?php
 /**
+ * Handle special urls.
+ *
  * @copyright Copyright (c) 2012, Tux Solbakk
  * @license http://opensource.org/licenses/bsd-license.php BSD 2-Clause License
  * @link http://gimlé.org/extensions/common/
  * @package common
  */
+
+namespace gimle\common;
 
 if ((\gimle\core\page(1) !== false) && (\gimle\core\page(0) === 'css') || (\gimle\core\page(0) === 'js')) {
 	$file = new Cache('gimle' . DIRECTORY_SEPARATOR . 'common' . DIRECTORY_SEPARATOR . \gimle\core\page(0) . DIRECTORY_SEPARATOR . \gimle\core\page(1));

@@ -1,10 +1,14 @@
-<?php namespace gimle\common;
+<?php
 /**
+ * Library of commonly used functions.
+ *
  * @copyright Copyright (c) 2012, Tux Solbakk
  * @license http://opensource.org/licenses/bsd-license.php BSD 2-Clause License
  * @link http://gimlé.org/extensions/common/
  * @package functions
  */
+
+namespace gimle\common;
 
 /**
  * Removes all files and folders within a directory.
@@ -77,10 +81,13 @@ function get_upload_limit () {
 /**
  * Dumps a varialble from the global scope.
  *
+ * @todo Implement mode parameter.
+ *
  * @param mixed $var The variable to dump.
  * @param bool $return Return output? (Default: false)
- * @param string|bool|array $title Alternate title for the dump, or to backtrace.
- * @return void|string
+ * @param mixed $title string|bool|array Alternate title for the dump, or to backtrace.
+ * @param string $mode Not implemented yet.
+ * @return mixed void|string
  */
 function var_dump ($var, $return = false, $title = false, $mode = 'auto') {
 	if (!isset(System::$config['common']['background'])) {
@@ -90,7 +97,7 @@ function var_dump ($var, $return = false, $title = false, $mode = 'auto') {
 		$background = System::$config['common']['background'];
 	}
 
-	$fixDumpString = function ($name, $value, $htmlspecial = true) use (&$colorfunction, &$background) {
+	$fixDumpString = function ($name, $value, $htmlspecial = true) use (&$background) {
 		if (in_array($name, array('[\'pass\']', '[\'password\']', '[\'PHP_AUTH_PW\']'))) {
 			$value = '********';
 		}
@@ -106,7 +113,7 @@ function var_dump ($var, $return = false, $title = false, $mode = 'auto') {
 		return $value;
 	};
 
-	$dodump = function ($var, $var_name = null, $indent = 0, $params = array()) use (&$dodump, &$fixDumpString, &$colorfunction, &$background) {
+	$dodump = function ($var, $var_name = null, $indent = 0, $params = array()) use (&$dodump, &$fixDumpString, &$background) {
 		if (strstr(print_r($var, true), '*RECURSION*') == true) {
 			echo colorize('Recursion detected, performing normal var_dump:', 'recursion', $background) . ' ';
 			echo colorize($var_name, 'varname', $background) . ' ' . colorize('=>', 'black', $background) . ' ';
@@ -310,7 +317,7 @@ function var_dump ($var, $return = false, $title = false, $mode = 'auto') {
  *
  * @param array $arr The array to find a key in.
  * @param int $which Which key to look for.
- * @return bool|string key as string, or false if fail.
+ * @return mixed bool|string key as string, or false if fail.
  */
 function array_key (array $arr = array (), $which = 0) {
 	$keys = array_keys($arr);
@@ -332,7 +339,7 @@ function array_key (array $arr = array (), $which = 0) {
  *
  * @param array $arr The array to find a value in.
  * @param int $which Which key to look for.
- * @return bool|mixed value, or false if fail.
+ * @return mixed Value, or false if fail.
  */
 function array_value (array $arr = array (), $which = 0) {
 	if ($key = array_key($arr, $which)) {
@@ -516,11 +523,11 @@ function number_to_roman ($num) {
 /**
  * Cut a string to desired length.
  *
- * @param input
- * @param length
- * @param bool cut by word, will never overflow desired length
- * @param cutted string ending
- * @return result
+ * @param string $string Input string.
+ * @param int $limit Max length.
+ * @param bool $byword Cut by word, will never overflow desired length (Default: true).
+ * @param string $ending Cutted string ending (Default: …).
+ * @return string Result.
  */
 function cut_string ($string, $limit, $byword = true, $ending = '…') {
 	if (mb_strlen($string) > $limit + 1) {
@@ -541,9 +548,12 @@ function cut_string ($string, $limit, $byword = true, $ending = '…') {
 /**
  * Colorize a string according to the envoriment settings.
  *
- * @param string $content
- * @param string $color
- * @param string $background
+ * @todo Make background default to a color.
+ *
+ * @param string $content The content to colorize.
+ * @param string $color The color to use.
+ * @param string $background The background for color overrides to maintain visibility.
+ * @param bool $getStyle return the style only (Default false).
  * @return string
  */
 function colorize ($content, $color, $background, $getStyle = false) {
@@ -674,19 +684,19 @@ function colorize ($content, $color, $background, $getStyle = false) {
  * Send a get and/or post request and return the result.
  *
  * @param string $url The url.
- * @param false|array $post Optional post fields to send. (Default false).
- * @param false|array $header Optional headers to send. (Default: false).
- * @param int $timeout How many seconds to wait for responce.
- * @param int $connecttimeout How many seconds to wait for connection.
- * @return false|array
+ * @param mixed $post false|array Optional post fields to send. (Default false).
+ * @param mixed $headers false|array Optional headers to send. (Default: false).
+ * @param int $timeout How many seconds to wait for responce. (Default 1).
+ * @param int $connecttimeout How many seconds to wait for connection. (Default 1).
+ * @return mixed false|array
  */
-function request_url ($url, $post = false, $header = false, $timeout = 1, $connecttimeout = 1) {
+function request_url ($url, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1) {
 	$return = array();
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
-	if (($header !== false) && (is_array($header))) {
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+	if (($headers !== false) && (is_array($headers))) {
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 	}
 	curl_setopt($ch, CURLOPT_ENCODING, "UTF-8");
 	curl_setopt($ch, CURLOPT_HEADER, 1);
@@ -734,7 +744,7 @@ function request_url ($url, $post = false, $header = false, $timeout = 1, $conne
  * Load a xml string into a simplexml object with libxml internal errors.
  *
  * @param string $xmlstring
- * @return false|object SimpleXMLElement
+ * @return mixed false|object SimpleXMLElement
  */
 function load_xml ($xmlstring) {
 	$cond = libxml_use_internal_errors(true);
@@ -748,10 +758,9 @@ function load_xml ($xmlstring) {
 /**
  * Fetch a xml file from a url and cache it for a specified period of time.
  *
- * @param string $url
- * @param false|int $cache
- * @param unknown_type $ttl
- * @return false|object SimpleXMLElement
+ * @param string $url The url.
+ * @param int $ttl Time to live.
+ * @return mixed false|object SimpleXMLElement
  */
 function get_xml ($url, $ttl = 600) {
 	$filename = preg_replace("#[^\pL _\-'\.,0-9]#iu", '_', $url);
@@ -875,7 +884,7 @@ function ent2utf8 ($string, $exclude = array('&', ';')) {
  * Get the users preferred language, or false if not found.
  *
  * @param array $avail A list of the available languages.
- * @return false|string
+ * @return mixed false|string
  */
 function get_preferred_language (array $avail) {
 	$return = false;
@@ -905,7 +914,7 @@ function get_preferred_language (array $avail) {
  * @param string $dir optional
  * @param string $prefix optional
  * @param string $suffix optional
- * @return string full path and name of the new temp file.
+ * @return string Full path and name of the new temp file.
  */
 function make_temp_file ($dir = false, $prefix = false, $suffix = false) {
 	$name = generate_password();

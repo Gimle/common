@@ -1,26 +1,36 @@
-<?php namespace gimle\common;
+<?php
 /**
+ * Canvas Utilities.
+ *
  * @copyright Copyright (c) 2012, Tux Solbakk
  * @license http://opensource.org/licenses/bsd-license.php BSD 2-Clause License
  * @link http://gimlé.org/extensions/common/
  * @package canvas
  */
 
+namespace gimle\common;
+
 /**
  * Canvas class.
  */
 class Canvas {
 	/**
+	 * The title of the page.
+	 *
 	 * @var string
 	 */
 	private static $title = '';
 
 	/**
+	 * The template to use.
+	 *
 	 * @var string
 	 */
 	private static $template = '';
 
 	/**
+	 * Magically generated variables for the canvas.
+	 *
 	 * @var array
 	 */
 	private static $magic = array();
@@ -40,9 +50,9 @@ class Canvas {
 	/**
 	 * Set or get title.
 	 *
-	 * @param false|string $title false to get, or string to set.
+	 * @param mixed $title false|string false to get, or string to set.
 	 * @param boolean $append
-	 * @return string|void
+	 * @return mixed string|void
 	 */
 	public static function title ($title = false, $append = false) {
 		if ($title === false) {

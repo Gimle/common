@@ -1,10 +1,14 @@
-<?php namespace gimle\common;
+<?php
 /**
+ * Initialize the common extension.
+ *
  * @copyright Copyright (c) 2012, Tux Solbakk
  * @license http://opensource.org/licenses/bsd-license.php BSD 2-Clause License
  * @link http://gimlé.org/extensions/common/
  * @package common
  */
+
+namespace gimle\common;
 
 session_start();
 

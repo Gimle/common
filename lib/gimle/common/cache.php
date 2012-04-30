@@ -1,10 +1,14 @@
-<?php namespace gimle\common;
+<?php
 /**
+ * Cache Utilities.
+ *
  * @copyright Copyright (c) 2012, Tux Solbakk
  * @license http://opensource.org/licenses/bsd-license.php BSD 2-Clause License
  * @link http://gimlé.org/extensions/common/
  * @package cache
  */
+
+namespace gimle\common;
 
 /**
  * Cache class.
@@ -13,14 +17,14 @@ class Cache {
 	/**
 	 * The instance filename.
 	 *
-	 * @var bool|string
+	 * @var mixed bool|string
 	 */
 	private $filename = false;
 
 	/**
 	 * The prepended base path for caching.
 	 *
-	 * @var bool|string
+	 * @var mixed bool|string
 	 */
 	private static $prepend = false;
 
@@ -53,7 +57,7 @@ class Cache {
 	/**
 	 * Get the age of the cache in seconds, or false on failure.
 	 *
-	 * @return int|bool
+	 * @return mixed int|bool
 	 */
 	public function age () {
 		if (file_exists($this->filename)) {

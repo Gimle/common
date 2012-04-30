@@ -1,4 +1,7 @@
 <?php
+/**
+ * Array with the html5 entities.
+ */
 $html5 = array(
 	'&Tab;'                    => "\t",
 	'&NewLine;'                => "\n",
