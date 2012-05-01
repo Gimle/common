@@ -285,14 +285,10 @@ class Mysqlicore extends \mysqli {
 			$template = ' in <b>%s</b> on line <b>%s</b>';
 		}
 		$backtrace = debug_backtrace();
-		foreach ($backtrace as $key => $value)
-		{
-			if (isset($value['args']))
-			{
-				foreach ($value['args'] as $key2 => $value2)
-				{
-					if ((is_array($value2)) && (isset($value2['GLOBALS'])))
-					{
+		foreach ($backtrace as $key => $value) {
+			if (isset($value['args'])) {
+				foreach ($value['args'] as $key2 => $value2) {
+					if ((is_array($value2)) && (isset($value2['GLOBALS']))) {
 						$backtrace[$key]['args'][$key2] = 'Globals vars removed';
 					}
 				}
@@ -322,7 +318,7 @@ class Mysqliresult {
 	/**
 	 * Create a new mysqli_result object.
 	 *
-	 * @param \mysqli_result $result mysqli_result Object
+	 * @param mysqli_result $result mysqli_result Object
 	 * @return object mysqli_result Object
 	 */
 	public function __construct (\mysqli_result $result) {

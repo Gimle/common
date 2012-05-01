@@ -208,7 +208,7 @@ class Canvas {
 	 * @param array $params
 	 * @return mixed
 	 */
-	public static function __callstatic ($method, $params) {
+	public static function __callStatic ($method, $params) {
 		if (empty($params)) {
 			if (isset(self::$magic[$method])) {
 				return self::$magic[$method];

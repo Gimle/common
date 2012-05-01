@@ -319,7 +319,7 @@ function var_dump ($var, $return = false, $title = false, $mode = 'auto') {
  * @param int $which Which key to look for.
  * @return mixed bool|string key as string, or false if fail.
  */
-function array_key (array $arr = array (), $which = 0) {
+function array_key (array $arr = array(), $which = 0) {
 	$keys = array_keys($arr);
 	if ($which < 0) {
 		$keys = array_reverse($keys);
@@ -864,6 +864,7 @@ function code2utf8 ($num) {
  *
  * @param string $string
  * @param array $exclude
+ * @return string
  */
 function ent2utf8 ($string, $exclude = array('&', ';')) {
 	$html_translation_table = array();
