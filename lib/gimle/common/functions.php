@@ -831,6 +831,7 @@ function get_html_translation_table () {
 	$table['&there;'] = '∴';
 	$table['&verbar;'] = '|';
 	$table['&rsquo;'] = '’';
+	$table['&lsquo;'] = '‘';
 	$table['&Omega;'] = 'Ω';
 	$table['&omega;'] = 'ω';
 
