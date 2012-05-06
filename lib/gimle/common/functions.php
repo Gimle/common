@@ -915,9 +915,10 @@ function get_preferred_language (array $avail) {
  * @param string $dir optional
  * @param string $prefix optional
  * @param string $suffix optional
+ * @param string $as_dir optional Create a directory instead of file.
  * @return string Full path and name of the new temp file.
  */
-function make_temp_file ($dir = false, $prefix = false, $suffix = false) {
+function make_temp_file ($dir = false, $prefix = false, $suffix = false, $as_dir = false) {
 	$name = generate_password();
 	if ($dir === false) {
 		$dir = TEMP_DIR;
@@ -929,7 +930,13 @@ function make_temp_file ($dir = false, $prefix = false, $suffix = false) {
 		$name = $name . $suffix;
 	}
 	if (!file_exists($dir . $name)) {
-		touch($dir . $name);
+		if ($as_dir === false) {
+			touch($dir . $name);
+		}
+		else {
+			$name .= DIRECTORY_SEPARATOR;
+			mkdir($dir . $name, 0777, true);
+		}
 		return $dir . $name;
 	}
 	return tempfile($dir, $prefix, $suffix);
