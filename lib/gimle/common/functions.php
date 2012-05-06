@@ -548,19 +548,41 @@ function cut_string ($string, $limit, $byword = true, $ending = '…') {
 /**
  * Colorize a string according to the envoriment settings.
  *
- * @todo Make background default to a color.
- *
  * @param string $content The content to colorize.
  * @param string $color The color to use.
  * @param string $background The background for color overrides to maintain visibility.
+ * @param string $mode Default "auto", can be: "cli" or "web".
  * @param bool $getStyle return the style only (Default false).
  * @return string
  */
-function colorize ($content, $color, $background, $getStyle = false) {
+function colorize ($content, $color, $background = false, $mode = 'auto', $getStyle = false) {
 	if ((isset(System::$config['common']['colorize'])) && (System::$config['common']['colorize'] === false)) {
 		return $content;
 	}
-	if (ENV_CLI) {
+
+	if ($background === false) {
+		if (!isset(System::$config['common']['background'])) {
+			$background = 'white';
+		}
+		else {
+			$background = System::$config['common']['background'];
+		}
+	}
+
+	if ($mode === 'auto') {
+		$climode = (ENV_CLI ? true : false);
+	}
+	elseif ($mode === 'web') {
+		$climode = false;
+	}
+	elseif ($mode === 'cli') {
+		$climode = true;
+	}
+	else {
+		trigger_error('Invalid mode.', E_USER_WARNING);
+	}
+
+	if ($climode) {
 		$template = "\033[%sm%s\033[0m";
 	}
 	elseif ($getStyle === false) {
@@ -574,12 +596,12 @@ function colorize ($content, $color, $background, $getStyle = false) {
 		if ($config['type'] === 'alert') {
 			$state = ($config['value'] / $config['max']);
 			if ($state >= 1) {
-				if (ENV_CLI) {
+				if ($climode) {
 					return sprintf($template, '38;5;9', $content);
 				}
 				return sprintf($template, '#ff0000', $content);
 			}
-			elseif (ENV_CLI) {
+			elseif ($climode) {
 				if ($state < 0.1) {
 					return sprintf($template, '38;5;2', $state);
 				}
@@ -601,7 +623,7 @@ function colorize ($content, $color, $background, $getStyle = false) {
 				return sprintf($template, '38;5;166', $state);
 			}
 			elseif ($state === 0.5) {
-				if (ENV_CLI) {
+				if ($climode) {
 					return sprintf($template, '38;5;11', $content);
 				}
 				return sprintf($template, '#ffff00', $content);
@@ -616,61 +638,61 @@ function colorize ($content, $color, $background, $getStyle = false) {
 		}
 	}
 	elseif ($color === 'gray') {
-		if (ENV_CLI) {
+		if ($climode) {
 			return sprintf($template, '38;5;240', $content);
 		}
 		return sprintf($template, 'gray', $content);
 	}
 	elseif ($color === 'string') {
-		if (ENV_CLI) {
+		if ($climode) {
 			return sprintf($template, '38;5;46', $content);
 		}
 		return sprintf($template, 'green', $content);
 	}
 	elseif ($color === 'int') {
-		if (ENV_CLI) {
+		if ($climode) {
 			return sprintf($template, '38;5;196', $content);
 		}
 		return sprintf($template, 'red', $content);
 	}
 	elseif ($color === 'lightgray') {
 		if ($background === 'black') {
-			if (ENV_CLI) {
+			if ($climode) {
 				return sprintf($template, '38;5;240', $content);
 			}
 			return sprintf($template, 'darkgray', $content);
 		}
-		if (ENV_CLI) {
+		if ($climode) {
 			return sprintf($template, '38;5;251', $content);
 		}
 		return sprintf($template, 'lightgray', $content);
 	}
 	elseif ($color === 'bool') {
-		if (ENV_CLI) {
+		if ($climode) {
 			return sprintf($template, '38;5;57', $content);
 		}
 		return sprintf($template, 'purple', $content);
 	}
 	elseif ($color === 'float') {
-		if (ENV_CLI) {
+		if ($climode) {
 			return sprintf($template, '38;5;39', $content);
 		}
 		return sprintf($template, 'dodgerblue', $content);
 	}
 	elseif ($color === 'error') {
-		if (ENV_CLI) {
+		if ($climode) {
 			return sprintf($template, '38;5;198', $content);
 		}
 		return sprintf($template, 'deeppink', $content);
 	}
 	elseif ($color === 'recursion') {
-		if (ENV_CLI) {
+		if ($climode) {
 			return sprintf($template, '38;5;208', $content);
 		}
 		return sprintf($template, 'darkorange', $content);
 	}
 	elseif ($background === 'black') {
-		if (ENV_CLI) {
+		if ($climode) {
 			return sprintf($template, '38;5;256', $content);
 		}
 		return sprintf($template, 'white', $content);
