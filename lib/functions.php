@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2012, Tux Solbakk
  * @license http://opensource.org/licenses/bsd-license.php BSD 2-Clause License
  * @link http://gimlé.org/extensions/common/
- * @package common
+ * @package global_functions
  */
 
 if (!function_exists('mb_ucfirst')) {
