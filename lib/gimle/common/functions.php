@@ -867,6 +867,7 @@ function get_html_translation_table () {
 	$table['&there;'] = '∴';
 	$table['&verbar;'] = '|';
 	$table['&rsquo;'] = '’';
+	$table['&lsquo;'] = '‘';
 	$table['&Omega;'] = 'Ω';
 	$table['&omega;'] = 'ω';
 
@@ -911,8 +912,8 @@ function ent2utf8 ($string, $exclude = array('&', ';')) {
 	}
 	$string = strtr($string, $html_translation_table);
 
-	$string = preg_replace('~&#x([0-9a-f]+);~ei', '\\' . __NAMESPACE__ . '\\code2utf8(hexdec("\\1"))', $string);
-	$string = preg_replace('~&#([0-9]+);~e', '\\' . __NAMESPACE__ . '\\code2utf8(\\1)', $string);
+	$string = preg_replace('/&#x([0-9a-f]+);/ei', '\\' . __NAMESPACE__ . '\\code2utf8(hexdec("\\1"))', $string);
+	$string = preg_replace('/&#([0-9]+);/e', '\\' . __NAMESPACE__ . '\\code2utf8(\\1)', $string);
 
 	return $string;
 }
