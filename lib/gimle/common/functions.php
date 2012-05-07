@@ -802,7 +802,7 @@ function get_xml ($url, $ttl = 600) {
  *
  * @return array
  */
-function get_html_translation_table () {
+function get_html_translation_table ($append = array()) {
 	$table = array();
 	if ((PHP_MAJOR_VERSION >= 5) && (PHP_MINOR_VERSION >= 3) && (PHP_RELEASE_VERSION >= 3)) {
 		foreach (\get_html_translation_table(HTML_ENTITIES) as $key => $value) {
@@ -834,6 +834,10 @@ function get_html_translation_table () {
 	$table['&lsquo;'] = '‘';
 	$table['&Omega;'] = 'Ω';
 	$table['&omega;'] = 'ω';
+
+	if (!empty($append)) {
+		array_merge($table, $append);
+	}
 
 	return $table;
 }
@@ -867,9 +871,9 @@ function code2utf8 ($num) {
  * @param array $exclude
  * @return string
  */
-function ent2utf8 ($string, $exclude = array('&', ';')) {
+function ent2utf8 ($string, $exclude = array('&', ';'), $append = array()) {
 	$html_translation_table = array();
-	foreach (get_html_translation_table() as $key => $value) {
+	foreach (get_html_translation_table($append) as $key => $value) {
 		if (!in_array($value, $exclude)) {
 			$html_translation_table[$key] = $value;
 		}
