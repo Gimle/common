@@ -318,7 +318,7 @@ class Mysqliresult {
 	/**
 	 * Create a new mysqli_result object.
 	 *
-	 * @param mysqli_result $result mysqli_result Object
+	 * @param \mysqli_result $result mysqli_result Object
 	 * @return object mysqli_result Object
 	 */
 	public function __construct (\mysqli_result $result) {
