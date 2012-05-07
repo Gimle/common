@@ -487,7 +487,95 @@ function run ($exec) {
 	exec($exec . ' 2> ' . $filename, $stout, $return);
 	$sterr = explode("\n", trim(file_get_contents($filename)));
 	unlink($filename);
-	return array('command' => $exec, 'stout' => $stout, 'sterr' => $sterr, 'return' => $return);
+	return array('stout' => $stout, 'sterr' => $sterr, 'return' => $return);
+}
+
+/**
+ * Execute the given command in the background.
+ *
+ * <div style="background-color: #ffc; color: #333; border: 1px solid #333; padding: 20px 30px;">
+ * <h1 style="text-align: center;">Caution</h1>
+ * <p>This functionality relies on system pids combined with command to retrieve status.
+ * Since pids can be reused by the system, you should make sure your <em>$command</em> call is unique.</p>
+ * </div>
+ *
+ * @param string $command The command that will be executed.
+ *
+ * @return array Array containing info about the job.
+ * <p style="font-family: monospace;">
+ * array (<br>
+ * <span style="white-space: pre; font-size: 50%;">&Tab;</span>'store' // The location of the command temp storage.<br>
+ * <span style="white-space: pre; font-size: 50%;">&Tab;</span>'pid' // The process id.<br>
+ * );
+ * </pre>
+ */
+function run_bg ($command) {
+	$tmpdir = make_temp_file(false, 'php_run_bg' . DIRECTORY_SEPARATOR, false, true);
+	file_put_contents($tmpdir . 'exec', $command);
+	exec(sprintf("%s > %s 2> %s & echo $! > %s", $command, $tmpdir . 'stout', $tmpdir . 'sterr', $tmpdir . 'pid'));
+	$pid = (int)trim(file_get_contents($tmpdir . 'pid'));
+	return array('store' => $tmpdir, 'pid' => $pid);
+}
+
+/**
+ * Get the status of a background process.
+ *
+ * @param string $store
+ * @return mixed
+ */
+function run_bg_status ($store) {
+	if (file_exists($store)) {
+		$pid = (int)trim(file_get_contents($store . 'pid'));
+		$exec = file_get_contents($store . 'exec');
+
+		exec('ps ' . $pid, $ps);
+		$running = false;
+		if (count($ps) === 2) {
+			if (strpos($ps[1], $exec) !== false) {
+				$running = true;
+			}
+		}
+
+		$stout = file_get_contents($store . 'stout');
+		$sterr = file_get_contents($store . 'sterr');
+
+		return array('stout' => $stout, 'sterr' => $sterr, 'pid' => $pid, 'running' => $running);
+	}
+	return false;
+}
+
+/**
+ * Cleanup the background run temp data.
+ *
+ * @param mixed $store false to clean all, or a specific store to clean.
+ * @return mixed
+ */
+function run_bg_clean ($store) {
+	$dir = TEMP_DIR . 'php_run_bg' . DIRECTORY_SEPARATOR;
+	if (file_exists($dir)) {
+		if ($store === false) {
+			$cleaned = 0;
+			$running = 0;
+			foreach (new \DirectoryIterator($dir) as $fileinfo) {
+				if (substr($fileinfo->getFilename(), 0, 1) !== '.') {
+					$status = run_bg_status($dir . $fileinfo->getFilename() . DIRECTORY_SEPARATOR);
+					if ((isset($status['running'])) && ($status['running'] === false)) {
+						$cleaned++;
+						exec('rm -rf ' . $dir . $fileinfo->getFilename() . DIRECTORY_SEPARATOR);
+					}
+					else {
+						$running++;
+					}
+				}
+			}
+			return array('cleaned' => $cleaned, 'running' => $running);
+		}
+		elseif (file_exists($store)) {
+			exec('rm -rf ' . $store);
+			return true;
+		}
+	}
+	return false;
 }
 
 /**
