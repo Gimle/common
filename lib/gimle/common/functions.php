@@ -870,6 +870,7 @@ function get_html_translation_table ($append = array()) {
 	$table['&lsquo;'] = '‘';
 	$table['&Omega;'] = 'Ω';
 	$table['&omega;'] = 'ω';
+	$table['&rdquo;'] = '”';
 
 	if (!empty($append)) {
 		array_merge($table, $append);
