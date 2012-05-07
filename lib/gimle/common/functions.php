@@ -99,7 +99,7 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 	}
 
 	if ($mode === 'auto') {
-		$webmode = (ENV_WEB ? true : false);
+		$webmode = (ENV_LEVEL & ENV_WEB ? true : false);
 	}
 	elseif ($mode === 'web') {
 		$webmode = true;
@@ -672,7 +672,7 @@ function colorize ($content, $color, $background = false, $mode = 'auto', $getSt
 	}
 
 	if ($mode === 'auto') {
-		$climode = (ENV_CLI ? true : false);
+		$climode = (ENV_LEVEL & ENV_CLI ? true : false);
 	}
 	elseif ($mode === 'web') {
 		$climode = false;
