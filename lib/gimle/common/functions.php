@@ -824,7 +824,7 @@ function request_url ($url, $post = false, $headers = false, $timeout = 1, $conn
 	}
 	curl_setopt($ch, CURLOPT_ENCODING, "UTF-8");
 	curl_setopt($ch, CURLOPT_HEADER, 1);
-	if (($post !== false) && (is_array($post))) {
+	if ($post !== false) {
 		curl_setopt($ch, CURLOPT_POST, 1);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 	}
