@@ -944,7 +944,7 @@ function get_html_translation_table ($append = array()) {
 		}
 	}
 	else {
-		require System::$config['extensions']['common'] . 'inc' . DIRECTORY_SEPARATOR . 'ent.php';
+		include System::$config['extensions']['common'] . 'inc' . DIRECTORY_SEPARATOR . 'ent.php';
 		$table = array_merge($table, $html5);
 	}
 	$table['&ap;'] = '≈';
