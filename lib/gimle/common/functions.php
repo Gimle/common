@@ -884,15 +884,20 @@ function load_xml ($xmlstring) {
  *
  * @param string $url The url.
  * @param int $ttl Time to live.
+ * @param string $xpath Xpath to a unix timestamp for expire. $ttl will then represent minimum time.
+ * @param mixed $post false|array Optional post fields to send. (Default false).
+ * @param mixed $headers false|array Optional headers to send. (Default: false).
+ * @param int $timeout How many seconds to wait for responce. (Default 1).
+ * @param int $connecttimeout How many seconds to wait for connection. (Default 1).
  * @return mixed false|object SimpleXMLElement
  */
-function get_xml ($url, $ttl = 600) {
+function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1) {
 	$filename = preg_replace("#[^\pL _\-'\.,0-9]#iu", '_', $url);
-	$cache = new Cache('gimle' . DIRECTORY_SEPARATOR . 'common' . DIRECTORY_SEPARATOR . 'get_xml' . DIRECTORY_SEPARATOR . $filename);
+	$cache = new Cache('gimle/common/get_xml/' . $filename);
 
 	$return = false;
 	if (!$cache->exists()) {
-		$xml = request_url($url);
+		$xml = request_url($url, $post, $headers, $timeout, $connecttimeout);
 		if ($xml !== false) {
 			$return = load_xml($xml['reply']);
 		}
@@ -901,8 +906,28 @@ function get_xml ($url, $ttl = 600) {
 		}
 	}
 	else {
-		if (($ttl !== false) && ($cache->age() > $ttl)) {
-			$xml = request_url($url);
+		$reload = false;
+		if (($xpath === false) && ($ttl !== false) && ($cache->age() > $ttl)) {
+			/* No xpath, and time ran out, so setting flag to get new cache. */
+			$reload = true;
+		}
+		if ($xpath !== false) {
+ 			$return = simplexml_load_string($cache->get());
+			$expire = $return->xpath($xpath);
+			if ((is_array($expire)) && (!empty($expire))) {
+				$expire = (int)$expire[0];
+				if ($expire < time()) {
+					if (($ttl !== false) && ($cache->age() > $ttl)) {
+						/* Time exceeded ttl, and expire flag in xml. Setting flag to get new cache. */
+						$reload = true;
+					}
+					/* else: Time exceeded xpath, but expire flag told to keep. */
+				}
+				/* else: keep cached version. */
+			}
+		}
+		if ($reload === true) {
+			$xml = request_url($url, $post, $headers, $timeout, $connecttimeout);
 			if ($xml !== false) {
 				$simplexml = load_xml($xml['reply']);
 			}
@@ -910,7 +935,7 @@ function get_xml ($url, $ttl = 600) {
 				$cache->put($xml['reply']);
 				$return = $simplexml;
 			}
-			else {
+			elseif ($xpath === false) {
 				$return = simplexml_load_string($cache->get());
 			}
 		}
