@@ -47,7 +47,7 @@ class System {
 		foreach (static::$autoloadPrependPaths as $autoloadPrependPath) {
 			$file = $autoloadPrependPath . 'lib' . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, strtolower($name)) . '.php';
 			if (file_exists($file)) {
-				require $file;
+				include $file;
 				if (method_exists($name, 'initialize')) {
 					call_user_func(array($name, 'initialize'));
 				}
