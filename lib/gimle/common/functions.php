@@ -946,20 +946,20 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 	return $return;
 }
 
-function get_file ($url, $ttl = 600) {
+function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1) {
 	$filename = preg_replace("#[^\pL _\-'\.,0-9]#iu", '_', $url);
 	$cache = new Cache('gimle/common/get_file/' . $filename);
 
 	$return = false;
 	if (!$cache->exists()) {
-		$result = request_url($url);
+		$result = request_url($url, $post, $headers, $timeout, $connecttimeout);
 		if ($result !== false) {
 			$cache->put($result['reply']);
 			$return = $result['reply'];
 		}
 	}
 	elseif (($ttl !== false) && ($cache->age() > $ttl)) {
-		$result = request_url($url);
+		$result = request_url($url, $post, $headers, $timeout, $connecttimeout);
 		if ($result !== false) {
 			$cache->put($result['reply']);
 			$return = $result['reply'];
