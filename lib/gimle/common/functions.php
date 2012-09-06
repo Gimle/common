@@ -422,7 +422,7 @@ function seconds_to_array ($time, $weeks = false) {
  * @return string Human readable time string.
  */
 function run_time () {
-	$microtime = microtime(true) - TIME_START;
+	$microtime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
 	$ttr = seconds_to_array($microtime);
 	$microtime = str_replace(',', '.', $microtime);
 	$time = '';
@@ -1010,6 +1010,7 @@ function get_html_translation_table ($append = array()) {
 	$table['&omega;'] = 'ω';
 	$table['&rdquo;'] = '”';
 	$table['&bull;'] = '•';
+	$table['&thinsp;'] = ' ';
 
 	if (!empty($append)) {
 		array_merge($table, $append);
