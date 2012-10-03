@@ -182,8 +182,18 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 				foreach ((array)$var as $key => $value) {
 					if (!property_exists($var, $key)) {
 						$key = ltrim($key, "\x0*");
-						if (substr($key, 0, strlen($class->getName())) == $class->getName()) {
+						if (substr($key, 0, strlen($class->getName())) === $class->getName()) {
 							$key = substr($key, (strlen($class->getName()) + 1));
+						}
+						else {
+							$parents = class_parents($var);
+							if (!empty($parents)) {
+								foreach ($parents as $parent) {
+									if (substr($key, 0, strlen($parent)) === $parent) {
+										$key = $parent . '->' . substr($key, (strlen($parent) + 1));
+									}
+								}
+							}
 						}
 					}
 					$dblcheck[$key] = $value;
