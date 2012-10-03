@@ -261,7 +261,7 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 	$prefix = 'unique';
 	$suffix = 'value';
 
-	if ($return == true) {
+	if ($return === true) {
 		ob_start();
 	}
 	if ($webmode) {
@@ -317,7 +317,7 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 	if ($webmode) {
 		echo "</pre>\n";
 	}
-	if ($return == true) {
+	if ($return === true) {
 		$out = ob_get_contents();
 		ob_end_clean();
 		return $out;
@@ -826,7 +826,7 @@ function request_url ($url, $post = false, $headers = false, $timeout = 1, $conn
 	curl_setopt($ch, CURLOPT_HEADER, 1);
 	if ($post !== false) {
 		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
 	}
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -1011,6 +1011,7 @@ function get_html_translation_table ($append = array()) {
 	$table['&rdquo;'] = '”';
 	$table['&bull;'] = '•';
 	$table['&thinsp;'] = ' ';
+	$table['&trade;'] = '™';
 
 	if (!empty($append)) {
 		array_merge($table, $append);
