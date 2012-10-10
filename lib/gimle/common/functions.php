@@ -836,7 +836,10 @@ function request_url ($url, $post = false, $headers = false, $timeout = 1, $conn
 	curl_setopt($ch, CURLOPT_HEADER, 1);
 	if ($post !== false) {
 		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
+		if (is_array($post)) {
+			$post = http_build_query($post);
+		}
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 	}
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
