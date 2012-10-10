@@ -17,28 +17,39 @@ class Cache {
 	/**
 	 * The instance filename.
 	 *
-	 * @var mixed bool|string
+	 * @var mixed $filename bool|string
 	 */
 	private $filename = false;
 
 	/**
 	 * The prepended base path for caching.
 	 *
-	 * @var mixed bool|string
+	 * @var mixed $prepend bool|string
 	 */
-	private static $prepend = false;
+	private $prepend = false;
+
+	/**
+	 * The name of the config block to retrieve config from.
+	 *
+	 * Can be set only in the constructor as the second parameter.
+	 *
+	 * @var string $configBlock Default value: cache
+	 */
+	private $configBlock = 'cache';
 
 	/**
 	 * Create a new caching instance with the specified filename.
 	 *
 	 * @param string $filename
+	 * @param string $location Optional override for the cache config block key.
 	 * @return object
 	 */
-	public function __construct ($filename) {
-		if (self::$prepend === false) {
-			self::prepend();
+	public function __construct ($filename, $config = false) {
+		if ($config !== false) {
+			$this->configBlock = $config;
 		}
-		$this->filename = self::$prepend . $filename;
+		$this->prepend();
+		$this->filename = $this->prepend . $filename;
 	}
 
 	/**
@@ -48,10 +59,7 @@ class Cache {
 	 * @return void
 	 */
 	public static function clear ($deleteRoot = false) {
-		if (self::$prepend === false) {
-			self::prepend();
-		}
-		clear_dir(self::$prepend, $deleteRoot);
+		clear_dir($this->prepend, $deleteRoot);
 	}
 
 	/**
@@ -96,12 +104,12 @@ class Cache {
 	public function put ($content) {
 		$return = true;
 
-		if (isset(System::$config['cache']['umask'])) {
-			$oldumask = umask(System::$config['cache']['umask']);
+		if (isset(System::$config[$this->configBlock]['umask'])) {
+			$oldumask = umask(System::$config[$this->configBlock]['umask']);
 		}
 
-		if (isset(System::$config['cache']['chmod']['dir'])) {
-			$chmod = System::$config['cache']['chmod']['dir'];
+		if (isset(System::$config[$this->configBlock]['chmod']['dir'])) {
+			$chmod = System::$config[$this->configBlock]['chmod']['dir'];
 		}
 		else {
 			$chmod = 0777;
@@ -116,12 +124,12 @@ class Cache {
 		}
 		else {
 			file_put_contents($this->filename, $content);
-			if (isset(System::$config['cache']['chmod']['file'])) {
-				chmod($this->filename, System::$config['cache']['chmod']['file']);
+			if (isset(System::$config[$this->configBlock]['chmod']['file'])) {
+				chmod($this->filename, System::$config[$this->configBlock]['chmod']['file']);
 			}
 		}
 
-		if (isset(System::$config['cache']['umask'])) {
+		if (isset(System::$config[$this->configBlock]['umask'])) {
 			umask($oldumask);
 		}
 		return $return;
@@ -144,29 +152,39 @@ class Cache {
 	 *
 	 * @return void
 	 */
-	private static function prepend () {
-		if (!isset(System::$config['cache']['dir'])) {
-			self::$prepend = TEMP_DIR . substr(SITE_DIR, strrpos(rtrim(SITE_DIR, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR) + 1);
+	private function prepend () {
+		if (isset(System::$config[$this->configBlock]['base_dir'])) {
+			$basePath = System::$config[$this->configBlock]['base_dir'];
+		}
+
+		if (!isset(System::$config[$this->configBlock]['dir'])) {
+			if (!isset($basePath)) {
+				$basePath = TEMP_DIR;
+			}
+			$this->prepend = $basePath . substr(SITE_DIR, strrpos(rtrim(SITE_DIR, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR) + 1);
 		}
 		else {
-			self::$prepend = System::$config['cache']['dir'];
+			if (!isset($basePath)) {
+				$basePath = '';
+			}
+			$this->prepend = $basePath . System::$config[$this->configBlock]['dir'];
 		}
 
-		if (isset(System::$config['cache']['umask'])) {
-			$oldumask = umask(System::$config['cache']['umask']);
+		if (isset(System::$config[$this->configBlock]['umask'])) {
+			$oldumask = umask(System::$config[$this->configBlock]['umask']);
 		}
 
-		if (isset(System::$config['cache']['chmod']['dir'])) {
-			$chmod = System::$config['cache']['chmod']['dir'];
+		if (isset(System::$config[$this->configBlock]['chmod']['dir'])) {
+			$chmod = System::$config[$this->configBlock]['chmod']['dir'];
 		}
 		else {
 			$chmod = 0777;
 		}
-		if (!file_exists(self::$prepend)) {
-			mkdir(self::$prepend, $chmod, true);
+		if (!file_exists($this->prepend)) {
+			mkdir($this->prepend, $chmod, true);
 		}
-		if ((!is_writable(self::$prepend)) || (!is_readable(self::$prepend))) {
-			trigger_error('Access to cache dir "' . self::$prepend . '" fail.', E_USER_WARNING);
+		if ((!is_writable($this->prepend)) || (!is_readable($this->prepend))) {
+			trigger_error('Access to cache dir "' . $this->prepend . '" fail.', E_USER_WARNING);
 		}
 	}
 }
