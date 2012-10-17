@@ -832,7 +832,7 @@ function request_url ($url, $post = false, $headers = false, $timeout = 1, $conn
 	if (($headers !== false) && (is_array($headers))) {
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 	}
-	curl_setopt($ch, CURLOPT_ENCODING, "UTF-8");
+	curl_setopt($ch, CURLOPT_ENCODING, 'UTF-8');
 	curl_setopt($ch, CURLOPT_HEADER, 1);
 	if ($post !== false) {
 		curl_setopt($ch, CURLOPT_POST, 1);
@@ -853,22 +853,11 @@ function request_url ($url, $post = false, $headers = false, $timeout = 1, $conn
 		return false;
 	}
 
-	if (substr($result, 0, 25) === "HTTP/1.1 100 Continue\r\n\r\n") {
-		$tmp = explode("\r\n\r\n", $result, 3);
-		$result = array();
-		$result[0] = '';
-		$result[1] = $tmp[2];
-		unset($tmp[2]);
-		$result[0] = implode("\n\n", $tmp);
-		unset($tmp);
-	}
-	else {
-		$result = explode("\r\n\r\n", $result, 2);
-	}
+	$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 
-	$return['reply'] = $result[1];
+	$return['reply'] = substr($result, $header_size);
 	$return['status'] = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-	$return['header'] = str_replace("\r", '', $result[0]);
+	$return['header'] = substr($result, 0, $header_size);
 	$return['info'] = curl_getinfo($ch);
 	$return['error'] = curl_errno($ch);
 
