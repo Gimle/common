@@ -1126,3 +1126,35 @@ function make_temp_file ($dir = false, $prefix = false, $suffix = false, $as_dir
 	}
 	return tempfile($dir, $prefix, $suffix);
 }
+
+function pathinfo ($path, $options = false) {
+	$pathinfo = \pathinfo($path);
+	if (($pathinfo['dirname'] === '.') && (substr($path, 0, 1) !== '.')) {
+		$pathinfo['dirname'] = '';
+	}
+	else {
+		$pathinfo['dirname'] .= DIRECTORY_SEPARATOR;
+	}
+	$pathinfo['complete'] = $path;
+
+	if ($options !== false) {
+		$return = '';
+		if ($options & PATHINFO_DIRNAME) {
+			$return .= $pathinfo['dirname'];
+		}
+		if ($options & PATHINFO_BASENAME) {
+			$return .= $pathinfo['basename'];
+		}
+		else {
+			if ($options & PATHINFO_FILENAME) {
+				$return .= $pathinfo['filename'];
+			}
+			if ($options & PATHINFO_EXTENSION) {
+				$return .= $pathinfo['extension'];
+			}
+		}
+		return $return;
+	}
+
+	return $pathinfo;
+}
