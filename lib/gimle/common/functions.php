@@ -980,6 +980,8 @@ function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout =
  */
 function get_html_translation_table ($append = array()) {
 	$table = array();
+
+	/* Load the full php 5.4 translation table for all php versions */
 	if ((PHP_MAJOR_VERSION >= 5) && (PHP_MINOR_VERSION >= 3) && (PHP_RELEASE_VERSION >= 3)) {
 		foreach (\get_html_translation_table(HTML_ENTITIES) as $key => $value) {
 			$table[$value] = utf8_encode($key);
@@ -999,22 +1001,31 @@ function get_html_translation_table ($append = array()) {
 		include System::$config['extensions']['common'] . 'inc' . DIRECTORY_SEPARATOR . 'ent.php';
 		$table = array_merge($table, $html5);
 	}
+
+	/* Additional entities */
 	$table['&ap;'] = '≈';
 	$table['&dash;'] = '‐';
 	$table['&lsqb;'] = '[';
-	$table['&lsquor;'] = '‚';
-	$table['&rdquor;'] = '„';
+	$table['&bull;'] = '•';
 	$table['&there;'] = '∴';
+	$table['&trade;'] = '™';
 	$table['&verbar;'] = '|';
-	$table['&rsquo;'] = '’';
-	$table['&lsquo;'] = '‘';
 	$table['&Omega;'] = 'Ω';
 	$table['&omega;'] = 'ω';
-	$table['&rdquo;'] = '”';
-	$table['&bull;'] = '•';
-	$table['&thinsp;'] = ' ';
-	$table['&trade;'] = '™';
 
+	/* Quotes */
+	$table['&lsquor;'] = '‚';
+	$table['&rsquo;'] = '’';
+	$table['&lsquo;'] = '‘';
+	$table['&rdquor;'] = '„';
+	$table['&rdquo;'] = '”';
+
+	/* Spaces */
+	$table['&thinsp;'] = ' ';
+	$table['&ensp;'] = ' ';
+	$table['&emsp;'] = ' ';
+
+	/* Add custom entities if provided */
 	if (!empty($append)) {
 		array_merge($table, $append);
 	}
