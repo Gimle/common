@@ -48,26 +48,6 @@ class Canvas {
 	}
 
 	/**
-	 * Set or get title.
-	 *
-	 * @param mixed $title false|string false to get, or string to set.
-	 * @param boolean $append
-	 * @return mixed string|void
-	 */
-	public static function title ($title = false, $append = false) {
-		if ($title === false) {
-			return self::$title;
-		}
-		elseif ($append === true) {
-			self::$title .= $title;
-		}
-		else {
-			self::$title = $title;
-		}
-		return;
-	}
-
-	/**
 	 * Create the canvas from template.
 	 *
 	 * @return void
@@ -78,11 +58,18 @@ class Canvas {
 
 		$template = self::$template;
 		$replaces = array('%title%', '%content%');
-		$withs = array(self::$title, $content);
+		$withs = array(implode('', self::title()), $content);
 		if (!empty(self::$magic)) {
 			foreach (self::$magic as $replace => $with) {
 				if (is_array($with)) {
-					$with = implode("\n", $with);
+					$withTmp = array();
+					foreach ($with as $value) {
+						if (!is_array($value)) {
+							$withTmp[] = $value;
+						}
+					}
+					$with = implode("\n", $withTmp);
+					unset($withTmp);
 				}
 				$replaces[] = '%' . $replace . '%';
 				$withs[] = $with;
@@ -204,6 +191,22 @@ class Canvas {
 	/**
 	 * Set or get custom variables.
 	 *
+	 * This method will overwrite previous value by default.
+	 * To append instead of overwrite, set second parameter to true.
+	 * To unset a value, set the value to null.
+	 *
+	 * <p>Example setting a value.</p>
+	 * <code>Canvas::title('My page');</code>
+	 *
+	 * <p>Example appending a value.</p>
+	 * <code>Canvas::title('My page', true);</code>
+	 *
+	 * <p>Example setting a value at a position (You can also use named positions).</p>
+	 * <code>Canvas::title('My page', $pos);</code>
+	 *
+	 * <p>Example removing a variable.</p>
+	 * <code>Canvas::title(null);</code>
+	 *
 	 * @param string $method
 	 * @param array $params
 	 * @return mixed
@@ -216,11 +219,22 @@ class Canvas {
 			return false;
 		}
 		if (!isset($params[1])) {
-			self::$magic[$method][] = $params[0];
+			if (($params[0] !== null) && (!is_bool($params[0]))) {
+				self::$magic[$method] = array($params[0]);
+			}
+			elseif ($params[0] === null) {
+				unset(self::$magic[$method]);
+			}
 		}
 		else {
-			self::$magic[$method][$params[1]] = $params[0];
+			if (($params[1] !== null) && (!is_bool($params[1]))) {
+				self::$magic[$method][$params[1]] = $params[0];
+			}
+			elseif ($params[1] === true) {
+				self::$magic[$method][] = $params[0];
+			}
 		}
+
 		return;
 	}
 }

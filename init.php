@@ -41,5 +41,5 @@ require __DIR__ . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'functions
 require __DIR__ . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, __NAMESPACE__) . DIRECTORY_SEPARATOR . 'functions.php';
 
 if (in_array(\gimle\core\page(0), array('css', 'js'))) {
-	require __DIR__ . DIRECTORY_SEPARATOR . 'specialurls.php';
+	include __DIR__ . DIRECTORY_SEPARATOR . 'specialurls.php';
 }
