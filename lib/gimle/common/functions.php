@@ -917,7 +917,13 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
  			$return = simplexml_load_string($cache->get());
 			$expire = $return->xpath($xpath);
 			if ((is_array($expire)) && (!empty($expire))) {
-				$expire = (int)$expire[0];
+				$expire = (string)$expire[0];
+				if (ctype_digit($expire)) {
+					$expire = (int)$expire;
+				}
+				else {
+					$expire = strtotime($expire);
+				}
 				if ($expire < time()) {
 					if (($ttl !== false) && ($cache->age() > $ttl)) {
 						/* Time exceeded ttl, and expire flag in xml. Setting flag to get new cache. */
