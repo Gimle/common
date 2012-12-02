@@ -15,13 +15,6 @@ namespace gimle\common;
  */
 class Canvas {
 	/**
-	 * The title of the page.
-	 *
-	 * @var string
-	 */
-	private static $title = '';
-
-	/**
 	 * The template to use.
 	 *
 	 * @var string
