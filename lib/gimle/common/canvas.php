@@ -50,8 +50,9 @@ class Canvas {
 		ob_end_clean();
 
 		$template = self::$template;
-		$replaces = array('%title%', '%content%');
-		$withs = array(implode('', self::title()), $content);
+		$replaces = array('%content%');
+		$withs = array($content);
+
 		if (!empty(self::$magic)) {
 			foreach (self::$magic as $replace => $with) {
 				if (is_array($with)) {
