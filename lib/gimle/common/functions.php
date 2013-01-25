@@ -1018,6 +1018,10 @@ function get_html_translation_table ($append = array()) {
 	$table['&verbar;'] = '|';
 	$table['&Omega;'] = 'Ω';
 	$table['&omega;'] = 'ω';
+	$table['&alpha;'] = 'α';
+	$table['&beta;'] = 'β';
+	$table['&le;'] = '≤';
+	$table['&sdot;'] = '⋅';
 
 	/* Quotes */
 	$table['&lsquor;'] = '‚';
@@ -1033,7 +1037,7 @@ function get_html_translation_table ($append = array()) {
 
 	/* Add custom entities if provided */
 	if (!empty($append)) {
-		array_merge($table, $append);
+		$table = array_merge($table, $append);
 	}
 
 	return $table;
