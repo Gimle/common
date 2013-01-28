@@ -1022,6 +1022,7 @@ function get_html_translation_table ($append = array()) {
 	$table['&beta;'] = 'β';
 	$table['&le;'] = '≤';
 	$table['&sdot;'] = '⋅';
+	$table['&minus;'] = '−';
 
 	/* Quotes */
 	$table['&lsquor;'] = '‚';
