@@ -1023,6 +1023,14 @@ function get_html_translation_table ($append = array()) {
 	$table['&le;'] = '≤';
 	$table['&sdot;'] = '⋅';
 	$table['&minus;'] = '−';
+	$table['&kappa;'] = 'κ';
+	$table['&delta;'] = 'δ';
+	$table['&ge;'] = '≥';
+	$table['&gamma;'] = 'γ';
+	$table['&Delta;'] = 'Δ';
+	$table['&mu;'] = 'μ';
+	$table['&asymp;'] = '≈';
+	$table['&epsilon;'] = 'ε';
 
 	/* Quotes */
 	$table['&lsquor;'] = '‚';
