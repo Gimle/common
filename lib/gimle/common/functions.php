@@ -1031,6 +1031,9 @@ function get_html_translation_table ($append = array()) {
 	$table['&mu;'] = 'μ';
 	$table['&asymp;'] = '≈';
 	$table['&epsilon;'] = 'ε';
+	$table['&rarr;'] = '→';
+	$table['&permill;'] = '‰';
+	
 
 	/* Quotes */
 	$table['&lsquor;'] = '‚';
