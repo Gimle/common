@@ -1032,9 +1032,9 @@ function get_html_translation_table ($append = array()) {
 	$table['&asymp;'] = '≈';
 	$table['&epsilon;'] = 'ε';
 	$table['&rarr;'] = '→';
-	$table['&permill;'] = '‰';
+	$table['&permil;'] = '‰';
+	$table['&darr;'] = '↓';
 	
-
 	/* Quotes */
 	$table['&lsquor;'] = '‚';
 	$table['&rsquo;'] = '’';
