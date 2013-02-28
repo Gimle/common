@@ -998,7 +998,7 @@ function get_html_translation_table ($append = array()) {
 			$table[$value] = $key;
 		}
 	}
-	if ((PHP_MAJOR_VERSION >= 5) && (PHP_MINOR_VERSION >= 4)) {
+	if ((PHP_MAJOR_VERSION >= 5) && (PHP_MINOR_VERSION >= 4) && PHP_RELEASE_VERSION >= 6) {
 		foreach (\get_html_translation_table(HTML_ENTITIES, ENT_HTML5 | ENT_QUOTES, mb_internal_encoding()) as $key => $value) {
 			$table[$value] = $key;
 		}
@@ -1008,44 +1008,11 @@ function get_html_translation_table ($append = array()) {
 		$table = array_merge($table, $html5);
 	}
 
-	/* Additional entities */
-	$table['&ap;'] = '≈';
-	$table['&dash;'] = '‐';
-	$table['&lsqb;'] = '[';
-	$table['&bull;'] = '•';
-	$table['&there;'] = '∴';
-	$table['&trade;'] = '™';
-	$table['&verbar;'] = '|';
-	$table['&Omega;'] = 'Ω';
-	$table['&omega;'] = 'ω';
-	$table['&alpha;'] = 'α';
-	$table['&beta;'] = 'β';
-	$table['&le;'] = '≤';
-	$table['&sdot;'] = '⋅';
-	$table['&minus;'] = '−';
-	$table['&kappa;'] = 'κ';
-	$table['&delta;'] = 'δ';
-	$table['&ge;'] = '≥';
-	$table['&gamma;'] = 'γ';
-	$table['&Delta;'] = 'Δ';
-	$table['&mu;'] = 'μ';
-	$table['&asymp;'] = '≈';
-	$table['&epsilon;'] = 'ε';
-	$table['&rarr;'] = '→';
-	$table['&permil;'] = '‰';
-	$table['&darr;'] = '↓';
-	
-	/* Quotes */
-	$table['&lsquor;'] = '‚';
-	$table['&rsquo;'] = '’';
-	$table['&lsquo;'] = '‘';
-	$table['&rdquor;'] = '„';
-	$table['&rdquo;'] = '”';
-
-	/* Spaces */
-	$table['&thinsp;'] = ' ';
-	$table['&ensp;'] = ' ';
-	$table['&emsp;'] = ' ';
+ 	/* Additional entities */
+ 	$table['&ap;'] = '≈';
+ 	$table['&there;'] = '∴';
+ 	$table['&lsquor;'] = '‚';
+ 	$table['&rdquor;'] = '„';
 
 	/* Add custom entities if provided */
 	if (!empty($append)) {
