@@ -19,7 +19,7 @@ spl_autoload_register(__NAMESPACE__ . '\System::autoload');
 if (isset($config['extensions'])) {
 	if (!empty($config['extensions'])) {
 		foreach ($config['extensions'] as $extensionPath) {
-			if (file_exists($extensionPath . 'lib' . DIRECTORY_SEPARATOR)) {
+			if ((is_string($extensionPath)) && (file_exists($extensionPath . 'lib' . DIRECTORY_SEPARATOR))) {
 				System::$autoloadPrependPaths[] = $extensionPath;
 			}
 		}
