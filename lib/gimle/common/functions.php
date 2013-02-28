@@ -1084,6 +1084,69 @@ function ent2utf8 ($string, $exclude = array('&', ';'), $append = array()) {
 }
 
 /**
+ * Convert utf8 to entities.
+ *
+ * @param string $string
+ * @param array $exclude
+ * @return string
+ */
+function utf82ent ($string, $exclude = array('.', ',', '-'), $append = array()) {
+	$html_translation_table = array();
+	foreach (get_html_translation_table($append) as $key => $value) {
+		if (!in_array($value, $exclude)) {
+			$html_translation_table[$value] = $key;
+		}
+	}
+	$string = strtr($string, $html_translation_table);
+
+	return $string;
+}
+
+/**
+ * Convert a binary string to html escaped hex.
+ *
+ * @param string $string Input string
+ * @param string|false $exclude Regular expression for excluded characters.
+ * @return string
+ */
+function bin2htmlhex ($string, $exclude = '[\pL\pM\pS\pN\pP ]') {
+	$return = '';
+	$block = false;
+	for ($i = 0; $i < mb_strlen($string); $i++) {
+		$subStr = mb_substr(mb_substr($string, $i), 0, 1);
+		if ($subStr === '&') {
+			$block = true;
+		}
+		if ($block === true) {
+			$return .= $subStr;
+			if ($subStr === ';') {
+				$block = false;
+			}
+			continue;
+		}
+
+		if ($exclude !== false) {
+			if (preg_match('/' . $exclude . '/', $subStr)) {
+				$return .= $subStr;
+				continue;
+			}
+		}
+
+		$append = bin2hex(mb_convert_encoding($subStr, 'UTF-32', mb_internal_encoding()));
+		if (substr($append, 0, 6) === '000000') {
+			$append = substr($append, 6);
+		} elseif (substr($append, 0, 4) === '0000') {
+			$append = substr($append, 4);
+		} elseif (substr($append, 0, 2) === '00') {
+			$append = substr($append, 2);
+		}
+
+		$return .= '&#x' . $append . ';';
+	}
+	return $return;
+}
+
+/**
  * Get the users preferred language, or false if not found.
  *
  * @param array $avail A list of the available languages.
