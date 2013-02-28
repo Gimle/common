@@ -1018,7 +1018,23 @@ function get_html_translation_table ($append = array()) {
 	$table['&verbar;'] = '|';
 	$table['&Omega;'] = 'Ω';
 	$table['&omega;'] = 'ω';
-
+	$table['&alpha;'] = 'α';
+	$table['&beta;'] = 'β';
+	$table['&le;'] = '≤';
+	$table['&sdot;'] = '⋅';
+	$table['&minus;'] = '−';
+	$table['&kappa;'] = 'κ';
+	$table['&delta;'] = 'δ';
+	$table['&ge;'] = '≥';
+	$table['&gamma;'] = 'γ';
+	$table['&Delta;'] = 'Δ';
+	$table['&mu;'] = 'μ';
+	$table['&asymp;'] = '≈';
+	$table['&epsilon;'] = 'ε';
+	$table['&rarr;'] = '→';
+	$table['&permil;'] = '‰';
+	$table['&darr;'] = '↓';
+	
 	/* Quotes */
 	$table['&lsquor;'] = '‚';
 	$table['&rsquo;'] = '’';
@@ -1033,7 +1049,7 @@ function get_html_translation_table ($append = array()) {
 
 	/* Add custom entities if provided */
 	if (!empty($append)) {
-		array_merge($table, $append);
+		$table = array_merge($table, $append);
 	}
 
 	return $table;
