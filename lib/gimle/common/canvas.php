@@ -45,7 +45,7 @@ class Canvas {
 	 *
 	 * @return void
 	 */
-	public static function create () {
+	public static function create ($return = false) {
 		$content = ob_get_contents();
 		ob_end_clean();
 
@@ -79,7 +79,11 @@ class Canvas {
 		}
 		$template = str_replace($replaces, $withs, $template);
 
-		echo $template;
+		if ($return === false) {
+			echo $template;
+			return;
+		}
+		return $template;
 	}
 
 	/**
