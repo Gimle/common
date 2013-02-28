@@ -998,7 +998,7 @@ function get_html_translation_table ($append = array()) {
 			$table[$value] = $key;
 		}
 	}
-	if ((PHP_MAJOR_VERSION >= 5) && (PHP_MINOR_VERSION >= 4) && PHP_RELEASE_VERSION >= 6) {
+	if (version_compare(PHP_VERSION, '5.4.6') >= 0) {
 		foreach (\get_html_translation_table(HTML_ENTITIES, ENT_HTML5 | ENT_QUOTES, mb_internal_encoding()) as $key => $value) {
 			$table[$value] = $key;
 		}
