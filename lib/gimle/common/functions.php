@@ -40,11 +40,11 @@ function clear_dir ($path, $deleteRoot = false) {
  */
 function parse_php ($value) {
 	ob_start();
-	$value = preg_replace('/\<\?[^php|^=]/', 'gimle-hopefully-safe-replace-string', $value);
+	$value = preg_replace('/\<\?([^php|^=])/', 'gimle-hopefully-safe-replace-string$1', $value);
 	eval('?>' . $value);
 	$return = ob_get_contents();
 	ob_end_clean();
-	str_replace('gimle-hopefully-safe-replace-string', '<?', $value);
+	$return = str_replace('gimle-hopefully-safe-replace-string', '<?', $return);
 	return $return;
 }
 
