@@ -135,7 +135,7 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 			return;
 		}
 		$doDump_indent = colorize('|', 'lightgray', $background, $mode) . '   ';
-		echo str_repeat($doDump_indent, $indent) . colorize(htmlentities($var_name), 'varname', $background, $mode);
+		echo str_repeat($doDump_indent, $indent) . colorize(($webmode === true ? htmlentities($var_name) : $var_name), 'varname', $background, $mode);
 
 		if (is_array($var)) {
 			echo ' ' . colorize('=>', 'black', $background, $mode) . ' ' . colorize('Array (' . count($var) . ')', 'gray', $background, $mode) . "\n" . str_repeat($doDump_indent, $indent) . colorize('(', 'lightgray', $background, $mode) . "\n";
