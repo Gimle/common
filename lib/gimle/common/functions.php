@@ -988,14 +988,14 @@ function get_html_translation_table ($append = array()) {
 	$table = array();
 
 	/* Load the full php 5.4 translation table for all php versions */
-	if ((PHP_MAJOR_VERSION >= 5) && (PHP_MINOR_VERSION >= 3) && (PHP_RELEASE_VERSION >= 3)) {
-		foreach (\get_html_translation_table(HTML_ENTITIES) as $key => $value) {
-			$table[$value] = utf8_encode($key);
+	if (version_compare(PHP_VERSION, '5.3.3') >= 0) {
+		foreach (\get_html_translation_table(HTML_ENTITIES, null, mb_internal_encoding()) as $key => $value) {
+			$table[$value] = $key;
 		}
 	}
 	else {
-		foreach (\get_html_translation_table(HTML_ENTITIES, null, mb_internal_encoding()) as $key => $value) {
-			$table[$value] = $key;
+		foreach (\get_html_translation_table(HTML_ENTITIES) as $key => $value) {
+			$table[$value] = utf8_encode($key);
 		}
 	}
 	if (version_compare(PHP_VERSION, '5.4.6') >= 0) {
@@ -1009,10 +1009,13 @@ function get_html_translation_table ($append = array()) {
 	}
 
  	/* Additional entities */
- 	$table['&ap;'] = '≈';
- 	$table['&there;'] = '∴';
+ 	$table['&ap;']     = '≈';
+ 	$table['&there;']  = '∴';
  	$table['&lsquor;'] = '‚';
  	$table['&rdquor;'] = '„';
+ 	$table['&dash;']   = '‐';
+ 	$table['&lsqb;']   = '[';
+ 	$table['&verbar;'] = '|';
 
 	/* Add custom entities if provided */
 	if (!empty($append)) {
