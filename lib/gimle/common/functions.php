@@ -75,7 +75,7 @@ function string_to_bytes ($size) {
  * @return int Maximum number of bytes.
  */
 function get_upload_limit () {
-	return (int)min(string_to_bytes(ini_get('memory_limit')), string_to_bytes(ini_get('post_max_size')), string_to_bytes(ini_get('upload_max_filesize')));
+	return (int)min(string_to_bytes(ini_get('post_max_size')), string_to_bytes(ini_get('upload_max_filesize')));
 }
 
 /**
