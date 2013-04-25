@@ -42,10 +42,10 @@ if ((\gimle\core\page(1) !== false) && (\gimle\core\page(0) === 'css') || (\giml
 		header('Content-Length: ' . filesize($file->getFilename()));
 		header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($file->getFilename())) . ' GMT');
 		if (\gimle\core\page(0) === 'js') {
-			header('Content-Type: application/javascript');
+			header('Content-Type: application/javascript; charset=' . mb_internal_encoding());
 		}
 		elseif (\gimle\core\page(0) === 'css') {
-			header('Content-Type: text/css');
+			header('Content-Type: text/css; charset=' . mb_internal_encoding());
 		}
 		readfile($file->getFilename());
 	}
