@@ -988,7 +988,7 @@ function get_html_translation_table ($append = array()) {
 	$table = array();
 
 	/* Load the full php 5.4 translation table for all php versions */
-	if (version_compare(PHP_VERSION, '5.3.3') >= 0) {
+	if (version_compare(PHP_VERSION, '5.3.4') >= 0) {
 		foreach (\get_html_translation_table(HTML_ENTITIES, null, mb_internal_encoding()) as $key => $value) {
 			$table[$value] = $key;
 		}
