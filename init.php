@@ -43,3 +43,7 @@ require __DIR__ . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . str_replac
 if (in_array(\gimle\core\page(0), array('css', 'js'))) {
 	include __DIR__ . DIRECTORY_SEPARATOR . 'specialurls.php';
 }
+
+if (ENV_LEVEL | ENV_LIVE) {
+	include __DIR__ . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'dev.php';
+}
