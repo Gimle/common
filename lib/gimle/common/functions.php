@@ -33,6 +33,28 @@ function clear_dir ($path, $deleteRoot = false) {
 }
 
 /**
+ * Find a value in an array by sending in a string with the location path.
+ *
+ * @param array $input
+ * @param string $search
+ * @param string $separator (Default: ".")
+ * @return mixed
+ */
+function locate_in_array_by_string ($input, $search, $separator = '.')
+{
+	$search = explode($separator, $search);
+	$result = $input;
+	foreach ($search as $key) {
+		if (isset($result[$key])) {
+			$result = $result[$key];
+		} else {
+			return false;
+		}
+	}
+	return $result;
+}
+
+/**
  * Parse php code in a string.
  *
  * @param string $value
