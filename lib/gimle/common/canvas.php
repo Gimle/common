@@ -32,8 +32,8 @@ class Canvas {
 	 * Wrapper function to add deprecated messages.
 	 */
 	public static function start ($template) {
-		$bt = debug_backtrace()[0];
-		trigger_error('Use _start method instead. Caller: <b>' . $bt['file'] . '</b> on line <b>' . $bt['line'] . '</b>', E_USER_DEPRECATED);
+		$bt = debug_backtrace();
+		trigger_error('Use _start method instead. Caller: <b>' . $bt[0]['file'] . '</b> on line <b>' . $bt[0]['line'] . '</b>', E_USER_DEPRECATED);
 		return self::_start($template);
 	}
 
@@ -41,8 +41,8 @@ class Canvas {
 	 * Wrapper function to add deprecated messages.
 	 */
 	public static function create ($return = false) {
-		$bt = debug_backtrace()[0];
-		trigger_error('Use _create method instead. Caller: <b>' . $bt['file'] . '</b> on line <b>' . $bt['line'] . '</b>', E_USER_DEPRECATED);
+		$bt = debug_backtrace();
+		trigger_error('Use _create method instead. Caller: <b>' . $bt[0]['file'] . '</b> on line <b>' . $bt[0]['line'] . '</b>', E_USER_DEPRECATED);
 		return self::_create($return);
 	}
 
@@ -50,8 +50,8 @@ class Canvas {
 	 * Wrapper function to add deprecated messages.
 	 */
 	public static function createCaches ($cacheJS = true, $cacheCSS = true, $filename = false) {
-		$bt = debug_backtrace()[0];
-		trigger_error('Use _createCaches method instead. Caller: <b>' . $bt['file'] . '</b> on line <b>' . $bt['line'] . '</b>', E_USER_DEPRECATED);
+		$bt = debug_backtrace();
+		trigger_error('Use _createCaches method instead. Caller: <b>' . $bt[0]['file'] . '</b> on line <b>' . $bt[0]['line'] . '</b>', E_USER_DEPRECATED);
 		return self::_createCaches($cacheJS, $cacheCSS, $filename);
 	}
 
