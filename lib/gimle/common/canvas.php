@@ -29,15 +29,56 @@ class Canvas {
 	private static $magic = array();
 
 	/**
+	 * Wrapper function to add deprecated messages.
+	 */
+	public static function start ($template) {
+		$bt = debug_backtrace()[0];
+		trigger_error('Use _start method instead. Caller: <b>' . $bt['file'] . '</b> on line <b>' . $bt['line'] . '</b>', E_USER_DEPRECATED);
+		return self::_start($template);
+	}
+
+	/**
+	 * Wrapper function to add deprecated messages.
+	 */
+	public static function create ($return = false) {
+		$bt = debug_backtrace()[0];
+		trigger_error('Use _create method instead. Caller: <b>' . $bt['file'] . '</b> on line <b>' . $bt['line'] . '</b>', E_USER_DEPRECATED);
+		return self::_create($return);
+	}
+
+	/**
+	 * Wrapper function to add deprecated messages.
+	 */
+	public static function createCaches ($cacheJS = true, $cacheCSS = true, $filename = false) {
+		$bt = debug_backtrace()[0];
+		trigger_error('Use _createCaches method instead. Caller: <b>' . $bt['file'] . '</b> on line <b>' . $bt['line'] . '</b>', E_USER_DEPRECATED);
+		return self::_createCaches($cacheJS, $cacheCSS, $filename);
+	}
+
+	/**
 	 * Setup a canvas temple, and enable late variable bindings.
 	 *
 	 * @param string $template
 	 * @return void
 	 */
-	public static function start ($template) {
+	public static function _start ($template) {
 		self::$template = $template;
 		ob_start();
 		return;
+	}
+
+	/**
+	 * Check if a custom set variable is set, and has a value.
+	 *
+	 * @param string $name
+	 * @return boolean
+	 */
+	public static function _blankCheck ($name) {
+		$check = self::$name();
+		if (($check !== false) && (!empty($check)) && (implode('', $check) !== '')) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -45,7 +86,7 @@ class Canvas {
 	 *
 	 * @return void
 	 */
-	public static function create ($return = false) {
+	public static function _create ($return = false) {
 		$content = ob_get_contents();
 		ob_end_clean();
 
@@ -94,7 +135,7 @@ class Canvas {
 	 * @param string $filename
 	 * @return void
 	 */
-	public static function createCaches ($cacheJS = true, $cacheCSS = true, $filename = false) {
+	public static function _createCaches ($cacheJS = true, $cacheCSS = true, $filename = false) {
 		// @todo Look at $filename, and php files.
 
 		if ($cacheCSS) {
@@ -210,6 +251,10 @@ class Canvas {
 	 * @return mixed
 	 */
 	public static function __callStatic ($method, $params) {
+		if (substr($method, 0, 1) === '_') {
+			trigger_error('Methods starting with underscore is reserved for functionality, and should not be used for variables.', E_USER_ERROR);
+		}
+
 		if (empty($params)) {
 			if (isset(self::$magic[$method])) {
 				return self::$magic[$method];
