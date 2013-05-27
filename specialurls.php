@@ -23,10 +23,10 @@ if ((\gimle\core\page(1) !== false) && (\gimle\core\page(0) === 'css') || (\giml
 	}
 
 	if ($file->exists() === false) {
-		Canvas::createCaches(true, true, \gimle\core\page(1));
+		Canvas::_createCaches(true, true, \gimle\core\page(1));
 	}
 	elseif (($cacheJS) || ($cacheCSS)) {
-		Canvas::createCaches($cacheJS, $cacheCSS, \gimle\core\page(1));
+		Canvas::_createCaches($cacheJS, $cacheCSS, \gimle\core\page(1));
 	}
 
 	if ($file->exists() === true) {
