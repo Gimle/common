@@ -149,20 +149,56 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 		return $value;
 	};
 
-	$dodump = function ($var, $var_name = null, $indent = 0, $params = array()) use (&$dodump, &$fixDumpString, &$background, &$webmode, &$mode) {
-		if (strstr(print_r($var, true), '*RECURSION*') == true) {
-			echo colorize('Recursion detected, performing normal var_dump:', 'recursion', $background, $mode) . ' ';
-			echo colorize($var_name, 'varname', $background, $mode) . ' ' . colorize('=>', 'black', $background, $mode) . ' ';
-			var_dump($var);
-			return;
+	$recursionClasses = array();
+
+	$dodump = function ($var, $var_name = null, $indent = 0, $params = array()) use (&$dodump, &$fixDumpString, &$background, &$webmode, &$mode, &$recursionClasses) {
+		if (is_object($var)) {
+			if (!empty($recursionClasses)) {
+				$add = true;
+				foreach ($recursionClasses as $class) {
+					if ($var === $class) {
+						$add = false;
+					}
+				}
+				if ($add === true) {
+					$recursionClasses[] = $var;
+				}
+			} else {
+				$recursionClasses[] = $var;
+			}
 		}
+
 		$doDump_indent = colorize('|', 'lightgray', $background, $mode) . '   ';
 		echo str_repeat($doDump_indent, $indent) . colorize(($webmode === true ? htmlentities($var_name) : $var_name), 'varname', $background, $mode);
 
 		if (is_array($var)) {
 			echo ' ' . colorize('=>', 'black', $background, $mode) . ' ' . colorize('Array (' . count($var) . ')', 'gray', $background, $mode) . "\n" . str_repeat($doDump_indent, $indent) . colorize('(', 'lightgray', $background, $mode) . "\n";
 			foreach ($var as $key => $value) {
-				$dodump($value, '[\'' . $key . '\']', $indent + 1);
+				if (strpos(print_r($var[$key], true), '*RECURSION*') !== false) {
+					$doDump_indent = colorize('|', 'lightgray', $background, $mode) . '   ';
+					echo str_repeat($doDump_indent, $indent + 1) . colorize('[\'' . ($webmode === true ? htmlentities($key) : $key) . '\']', 'varname', $background, $mode);
+					echo ' ' . colorize('=', 'black', $background, $mode) . ' ';
+					echo colorize('*RECURSION*', 'recursion', $background, $mode);
+					echo "\n";
+				} elseif (is_object($value)) {
+					$same = false;
+					foreach ($recursionClasses as $class) {
+						if ($class === $value) {
+							$same = true;
+						}
+					}
+					if ($same === true) {
+						$doDump_indent = colorize('|', 'lightgray', $background, $mode) . '   ';
+						echo str_repeat($doDump_indent, $indent + 1) . colorize('[\'' . ($webmode === true ? htmlentities($key) : $key) . '\']', 'varname', $background, $mode);
+						echo ' ' . colorize('=', 'black', $background, $mode) . ' ';
+						echo colorize(get_class($value) . '()', 'recursion', $background, $mode);
+						echo "\n";
+					} else {
+						$dodump($value, '[\'' . $key . '\']', $indent + 1);
+					}
+				} else {
+					$dodump($value, '[\'' . $key . '\']', $indent + 1);
+				}
 			}
 			echo str_repeat($doDump_indent, $indent) . colorize(')', 'lightgray', $background, $mode);
 		}
@@ -262,7 +298,25 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 						if (array_key_exists($prop->name, $dblcheck)) {
 							unset($dblcheck[$prop->name]);
 						}
-						$dodump($value, '[\'' . $prop->name . '\'' . $append . ']', $indent + 1, array('error' => $error));
+						if (is_object($value)) {
+							$same = false;
+							foreach ($recursionClasses as $class) {
+								if ($class === $value) {
+									$same = true;
+								}
+							}
+							if ($same === true) {
+								$doDump_indent = colorize('|', 'lightgray', $background, $mode) . '   ';
+								echo str_repeat($doDump_indent, $indent + 1) . colorize('[\'' . ($webmode === true ? htmlentities($prop->name . '\'' . $append) : $prop->name . '\'' . $append) . ']', 'varname', $background, $mode);
+								echo ' ' . colorize('=', 'black', $background, $mode) . ' ';
+								echo colorize(get_class($value) . '()', 'recursion', $background, $mode);
+								echo "\n";
+							} else {
+								$dodump($value, '[\'' . $prop->name . '\'' . $append . ']', $indent + 1, array('error' => $error));
+							}
+						} else {
+							$dodump($value, '[\'' . $prop->name . '\'' . $append . ']', $indent + 1, array('error' => $error));
+						}
 					}
 				}
 				unset($props, $reflect);
