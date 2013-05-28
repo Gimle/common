@@ -16,7 +16,7 @@ if (!function_exists('d')) {
 	 * @param mixed $title string|false Alternate title for the dump.
 	 * @return string
 	 */
-	function d ($var, $title = false)
+	function d ($var, $return = false, $title = false)
 	{
 		if ($title === false) {
 			$title = array(
@@ -24,6 +24,6 @@ if (!function_exists('d')) {
 				'match' => '/d\((.*)/'
 			);
 		}
-		\gimle\common\var_dump($var, false, $title);
+		return \gimle\common\var_dump($var, $return, $title);
 	}
 }
