@@ -13,6 +13,7 @@ if (!function_exists('d')) {
 	 * Dumps a varialble from the global scope.
 	 *
 	 * @param mixed $var The variable to dump.
+	 * @param bool $return Return output? (Default: false)
 	 * @param mixed $title string|false Alternate title for the dump.
 	 * @return string
 	 */
