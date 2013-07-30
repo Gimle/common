@@ -56,6 +56,20 @@ class Canvas {
 	}
 
 	/**
+	 * Load a canvas.
+	 *
+	 * @param string $filename
+	 * @return void
+	 */
+	public static function _load ($filename) {
+		ob_start();
+		require $filename;
+		$canvas = ob_get_contents();
+		ob_end_clean();
+		Canvas::_start(parse_php($canvas));
+	}
+
+	/**
 	 * Setup a canvas temple, and enable late variable bindings.
 	 *
 	 * @param string $template
