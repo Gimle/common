@@ -1272,7 +1272,7 @@ function make_temp_file ($dir = false, $prefix = false, $suffix = false, $as_dir
 		}
 		return $dir . $name;
 	}
-	return tempfile($dir, $prefix, $suffix);
+	return make_temp_file($dir, $prefix, $suffix, $as_dir);
 }
 
 function pathinfo ($path, $options = false) {
