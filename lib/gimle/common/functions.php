@@ -193,6 +193,12 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 						echo ' ' . colorize('=', 'black', $background, $mode) . ' ';
 						echo colorize(get_class($value) . '()', 'recursion', $background, $mode);
 						echo "\n";
+					} elseif (get_class($value) === 'Closure') {
+						$doDump_indent = colorize('|', 'lightgray', $background, $mode) . '   ';
+						echo str_repeat($doDump_indent, $indent + 1) . colorize('[\'' . ($webmode === true ? htmlentities($key) : $key) . '\']', 'varname', $background, $mode);
+						echo ' ' . colorize('=', 'black', $background, $mode) . ' ';
+						echo colorize(get_class($value) . '()', 'recursion', $background, $mode);
+						echo "\n";
 					} else {
 						$dodump($value, '[\'' . $key . '\']', $indent + 1);
 					}
