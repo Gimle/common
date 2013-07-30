@@ -17,15 +17,13 @@ if ((\gimle\core\page(1) !== false) && (\gimle\core\page(0) === 'css') || (\giml
 	$cacheCSS = false;
 	if ((\gimle\core\page(0) === 'js') && (isset(System::$config['cache']['regenerate']['javascript'])) && (System::$config['cache']['regenerate']['javascript'] === true)) {
 		$cacheJS = true;
-	}
-	elseif ((\gimle\core\page(0) === 'css') && (isset(System::$config['cache']['regenerate']['css'])) && (System::$config['cache']['regenerate']['css'] === true)) {
+	} elseif ((\gimle\core\page(0) === 'css') && (isset(System::$config['cache']['regenerate']['css'])) && (System::$config['cache']['regenerate']['css'] === true)) {
 		$cacheCSS = true;
 	}
 
 	if ($file->exists() === false) {
 		Canvas::_createCaches(true, true, \gimle\core\page(1));
-	}
-	elseif (($cacheJS) || ($cacheCSS)) {
+	} elseif (($cacheJS) || ($cacheCSS)) {
 		Canvas::_createCaches($cacheJS, $cacheCSS, \gimle\core\page(1));
 	}
 
@@ -43,13 +41,11 @@ if ((\gimle\core\page(1) !== false) && (\gimle\core\page(0) === 'css') || (\giml
 		header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($file->getFilename())) . ' GMT');
 		if (\gimle\core\page(0) === 'js') {
 			header('Content-Type: application/javascript; charset=' . mb_internal_encoding());
-		}
-		elseif (\gimle\core\page(0) === 'css') {
+		} elseif (\gimle\core\page(0) === 'css') {
 			header('Content-Type: text/css; charset=' . mb_internal_encoding());
 		}
 		readfile($file->getFilename());
-	}
-	else {
+	} else {
 		header('HTTP/1.0 404 Not Found');
 	}
 	die();
