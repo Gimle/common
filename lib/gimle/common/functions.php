@@ -1306,3 +1306,47 @@ function pathinfo ($path, $options = false) {
 
 	return $pathinfo;
 }
+
+function file_exists_ssh ($server, $filename) {
+	$exec = 'if ssh ' . $server . ' stat ' . $filename . ' \> /dev/null 2\>\&1; then echo true; else echo false; fi';
+	$res = run($exec);
+	if (($res['return'] === 0) && (isset($res['stout'][0]))) {
+		if ($res['stout'][0] === 'true') {
+			return true;
+		} elseif ($res['stout'][0] === 'false') {
+			return false;
+		}
+	}
+	return null;
+}
+
+function mkdir_ssh ($server, $pathname, $mode = 0777, $recursive = false) {
+	$exec = 'ssh ' . $server . ' mkdir -m ' . decoct($mode) . ' ';
+	if ($recursive === true) {
+		$exec .= '-p ';
+	}
+	$exec .= '"' . $pathname . '"';
+	$res = run($exec);
+	if (($res['return'] === 0) && (empty($res['stout'])) && (isset($res['sterr'][0])) && (!isset($res['sterr'][1])) && ($res['sterr'][0] === '')) {
+		return true;
+	}
+	return $res;
+}
+
+function chown_ssh ($server, $filename, $user) {
+	$exec = 'ssh ' . $server . ' chown ' . $user . ' ' . $filename;
+	$res = run($exec);
+	if (($res['return'] === 0) && (empty($res['stout'])) && (isset($res['sterr'][0])) && (!isset($res['sterr'][1])) && ($res['sterr'][0] === '')) {
+		return true;
+	}
+	return $res;
+}
+
+function chgrp_ssh ($server, $filename, $group) {
+	$exec = 'ssh ' . $server . ' chgrp ' . $group . ' ' . $filename;
+	$res = run($exec);
+	if (($res['return'] === 0) && (empty($res['stout'])) && (isset($res['sterr'][0])) && (!isset($res['sterr'][1])) && ($res['sterr'][0] === '')) {
+		return true;
+	}
+	return $res;
+}
