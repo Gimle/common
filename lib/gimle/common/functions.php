@@ -976,7 +976,7 @@ function load_xml ($xmlstring) {
  * @return mixed false|object SimpleXMLElement
  */
 function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1) {
-	$filename = preg_replace("#[^\pL _\-'\.,0-9]#iu", '_', $url);
+	$filename = preg_replace('/[\/?*:;{}\\\\]/', '★', $url);
 	$cache = new Cache('gimle/common/get_xml/' . $filename);
 
 	$return = false;
