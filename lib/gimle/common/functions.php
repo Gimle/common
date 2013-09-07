@@ -931,10 +931,6 @@ function request_url ($url, $post = false, $headers = false, $timeout = 1, $conn
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $connecttimeout);
 	$result = curl_exec($ch);
 
-	if ($result === false) {
-		return false;
-	}
-
 	$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 
 	$return['reply'] = substr($result, $header_size);
@@ -982,7 +978,7 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 	$return = false;
 	if (!$cache->exists()) {
 		$xml = request_url($url, $post, $headers, $timeout, $connecttimeout);
-		if ($xml !== false) {
+		if ($xml['reply'] !== false) {
 			$return = load_xml($xml['reply']);
 		}
 		if ($return !== false) {
@@ -1018,7 +1014,7 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 		}
 		if ($reload === true) {
 			$xml = request_url($url, $post, $headers, $timeout, $connecttimeout);
-			if ($xml !== false) {
+			if ($xml['reply'] !== false) {
 				$simplexml = load_xml($xml['reply']);
 			}
 			if ((isset($simplexml)) && ($simplexml !== false)) {
@@ -1043,14 +1039,14 @@ function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout =
 	$return = false;
 	if (!$cache->exists()) {
 		$result = request_url($url, $post, $headers, $timeout, $connecttimeout);
-		if ($result !== false) {
+		if ($result['reply'] !== false) {
 			$cache->put($result['reply']);
 			$return = $result['reply'];
 		}
 	}
 	elseif (($ttl !== false) && ($cache->age() > $ttl)) {
 		$result = request_url($url, $post, $headers, $timeout, $connecttimeout);
-		if ($result !== false) {
+		if ($result['reply'] !== false) {
 			$cache->put($result['reply']);
 			$return = $result['reply'];
 		}
