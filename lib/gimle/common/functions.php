@@ -1307,7 +1307,7 @@ function pathinfo ($path, $options = false)
  *
  * @param $server Servername
  * @param $filename
- * @return mixed bool or null if failed.
+ * @return mixed true if ok, array with details if fail.
  */
 function file_exists_ssh ($server, $filename)
 {
@@ -1320,7 +1320,7 @@ function file_exists_ssh ($server, $filename)
 			return false;
 		}
 	}
-	return null;
+	return $res;
 }
 
 /**
