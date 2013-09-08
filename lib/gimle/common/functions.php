@@ -878,7 +878,7 @@ function colorize ($content, $color, $background = false, $mode = 'auto', $getSt
  * @param mixed $headers false|array Optional headers to send. (Default: false).
  * @param int $timeout How many seconds to wait for responce. (Default 1).
  * @param int $connecttimeout How many seconds to wait for connection. (Default 1).
- * @return mixed false|array
+ * @return array
  */
 function request_url ($url, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1)
 {
@@ -937,6 +937,8 @@ function load_xml ($xmlstring)
 
 /**
  * Fetch a xml file from a url and cache it for a specified period of time.
+ *
+ * @todo Maby this should return information about the transfer aswell (for debugging and fedback messages).
  *
  * @param string $url The url.
  * @param int $ttl Time to live.
@@ -1005,6 +1007,19 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 	return $return;
 }
 
+/**
+ * Fetch a file from a url and cache it for a specified period of time.
+ *
+ * @todo Maby this should return information about the transfer aswell (for debugging and fedback messages).
+ *
+ * @param string $url The url.
+ * @param int $ttl Time to live.
+ * @param mixed $post false|array Optional post fields to send. (Default false).
+ * @param mixed $headers false|array Optional headers to send. (Default: false).
+ * @param int $timeout How many seconds to wait for responce. (Default 1).
+ * @param int $connecttimeout How many seconds to wait for connection. (Default 1).
+ * @return mixed false|array
+ */
 function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1)
 {
 	$filename = preg_replace("#[^\pL _\-'\.,0-9]#iu", '_', $url);
@@ -1246,6 +1261,16 @@ function make_temp_file ($dir = false, $prefix = false, $suffix = false, $as_dir
 	return make_temp_file($dir, $prefix, $suffix, $as_dir);
 }
 
+/**
+ * Returns information about a path.
+ * This function is almost the same as the built in one, with two exceptions:
+ * 1) The dirname will always end with a trailing slash.
+ * 2) Return leading directory dot as specified in the request parameter.
+ *
+ * @param $path
+ * @param $options (Default: false)
+ * @return mixed
+ */
 function pathinfo ($path, $options = false)
 {
 	$pathinfo = \pathinfo($path);
@@ -1277,6 +1302,13 @@ function pathinfo ($path, $options = false)
 	return $pathinfo;
 }
 
+/**
+ * Check if a file exists on a remote server.
+ *
+ * @param $server Servername
+ * @param $filename
+ * @return mixed bool or null if failed.
+ */
 function file_exists_ssh ($server, $filename)
 {
 	$exec = 'if ssh ' . $server . ' stat ' . $filename . ' \> /dev/null 2\>\&1; then echo true; else echo false; fi';
@@ -1291,6 +1323,15 @@ function file_exists_ssh ($server, $filename)
 	return null;
 }
 
+/**
+ * Make a directory on a remote server.
+ *
+ * @param $server Servername
+ * @param $pathname
+ * @param $mode (Default: 0777)
+ * @param $recursive Also create parent directories if they do not exist. (Default: false)
+ * @return mixed true if ok, array with details if fail.
+ */
 function mkdir_ssh ($server, $pathname, $mode = 0777, $recursive = false)
 {
 	$exec = 'ssh ' . $server . ' mkdir -m ' . decoct($mode) . ' ';
@@ -1305,6 +1346,14 @@ function mkdir_ssh ($server, $pathname, $mode = 0777, $recursive = false)
 	return $res;
 }
 
+/**
+ * Change the user owner of a file exists on a remote server.
+ *
+ * @param $server Servername
+ * @param $filename
+ * @param $user
+ * @return mixed true if ok, array with details if fail.
+ */
 function chown_ssh ($server, $filename, $user)
 {
 	$exec = 'ssh ' . $server . ' chown ' . $user . ' ' . $filename;
@@ -1315,6 +1364,14 @@ function chown_ssh ($server, $filename, $user)
 	return $res;
 }
 
+/**
+ * Change the group owner of a file exists on a remote server.
+ *
+ * @param $server Servername
+ * @param $filename
+ * @param $user
+ * @return mixed true if ok, array with details if fail.
+ */
 function chgrp_ssh ($server, $filename, $group)
 {
 	$exec = 'ssh ' . $server . ' chgrp ' . $group . ' ' . $filename;
