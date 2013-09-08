@@ -938,30 +938,38 @@ function load_xml ($xmlstring)
 /**
  * Fetch a xml file from a url and cache it for a specified period of time.
  *
- * @todo Maby this should return information about the transfer aswell (for debugging and fedback messages).
- *
  * @param string $url The url.
- * @param int $ttl Time to live.
+ * @param mixed $ttl int Time to live or false to never renew.
  * @param string $xpath Xpath to a unix timestamp for expire. $ttl will then represent minimum time.
  * @param mixed $post false|array Optional post fields to send. (Default false).
  * @param mixed $headers false|array Optional headers to send. (Default: false).
  * @param int $timeout How many seconds to wait for responce. (Default 1).
  * @param int $connecttimeout How many seconds to wait for connection. (Default 1).
- * @return mixed false|object SimpleXMLElement
+ * @param mixed $validationCallback false or a callback function for validating before storing the cache.
+ * @return array with false on failure or object SimpleXMLElement on success.
  */
-function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1)
+function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1, $validationCallback = false)
 {
 	$filename = preg_replace('/[\/?*:;{}\\\\]/', '★', $url);
 	$cache = new Cache('gimle/common/get_xml/' . $filename);
 
-	$return = false;
+	$return = array();
+	$cacheHit = false;
 	if (!$cache->exists()) {
-		$xml = request_url($url, $post, $headers, $timeout, $connecttimeout);
-		if ($xml['reply'] !== false) {
-			$return = load_xml($xml['reply']);
+		$return = request_url($url, $post, $headers, $timeout, $connecttimeout);
+		if ($return['reply'] !== false) {
+			$return['reply'] = load_xml($return['reply']);
 		}
-		if ($return !== false) {
-			$cache->put($xml['reply']);
+		if ($return['reply'] !== false) {
+			if ($validationCallback !== false) {
+				$res = $validationCallback($return);
+				$return['validation'] = $res;
+				if ($res === true) {
+					$cache->put($return['reply']);
+				}
+			} else {
+				$cache->put($return['reply']);
+			}
 		}
 	} else {
 		$reload = false;
@@ -970,8 +978,8 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 			$reload = true;
 		}
 		if ($xpath !== false) {
- 			$return = simplexml_load_string($cache->get());
-			$expire = $return->xpath($xpath);
+ 			$return['reply'] = simplexml_load_string($cache->get());
+			$expire = $return['reply']->xpath($xpath);
 			if ((is_array($expire)) && (!empty($expire))) {
 				$expire = (string)$expire[0];
 				if (ctype_digit($expire)) {
@@ -990,56 +998,69 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 			}
 		}
 		if ($reload === true) {
-			$xml = request_url($url, $post, $headers, $timeout, $connecttimeout);
-			if ($xml['reply'] !== false) {
-				$simplexml = load_xml($xml['reply']);
+			$return = request_url($url, $post, $headers, $timeout, $connecttimeout);
+			if ($return['reply'] !== false) {
+				$simplexml = load_xml($return['reply']);
 			}
 			if ((isset($simplexml)) && ($simplexml !== false)) {
-				$cache->put($xml['reply']);
-				$return = $simplexml;
+				if ($validationCallback !== false) {
+					$res = $validationCallback($return);
+					$return['validation'] = $res;
+					if ($res === true) {
+						$cache->put($return['reply']);
+					}
+				} else {
+					$cache->put($return['reply']);
+				}
+				$return['reply'] = $simplexml;
 			} elseif ($xpath === false) {
-				$return = simplexml_load_string($cache->get());
+				$return['reply'] = simplexml_load_string($cache->get());
+				$cacheHit = true;
 			}
 		} else {
-			$return = simplexml_load_string($cache->get());
+			$return['reply'] = simplexml_load_string($cache->get());
+			$cacheHit = true;
 		}
 	}
+	$return['cacheHit'] = $cacheHit;
 	return $return;
 }
 
 /**
  * Fetch a file from a url and cache it for a specified period of time.
  *
- * @todo Maby this should return information about the transfer aswell (for debugging and fedback messages).
- *
  * @param string $url The url.
- * @param int $ttl Time to live.
+ * @param mixed $ttl int Time to live or false to never renew.
  * @param mixed $post false|array Optional post fields to send. (Default false).
  * @param mixed $headers false|array Optional headers to send. (Default: false).
  * @param int $timeout How many seconds to wait for responce. (Default 1).
  * @param int $connecttimeout How many seconds to wait for connection. (Default 1).
- * @return mixed false|array
+ * @param mixed $validationCallback false or a callback function for validating before storing the cache.
+ * @return array
  */
-function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1)
+function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1, $validationCallback = false)
 {
 	$filename = preg_replace("#[^\pL _\-'\.,0-9]#iu", '_', $url);
 	$cache = new Cache('gimle/common/get_file/' . $filename);
 
-	$return = false;
-	if (!$cache->exists()) {
-		$result = request_url($url, $post, $headers, $timeout, $connecttimeout);
-		if ($result['reply'] !== false) {
-			$cache->put($result['reply']);
-			$return = $result['reply'];
-		}
-	} elseif (($ttl !== false) && ($cache->age() > $ttl)) {
-		$result = request_url($url, $post, $headers, $timeout, $connecttimeout);
-		if ($result['reply'] !== false) {
-			$cache->put($result['reply']);
-			$return = $result['reply'];
+	$return = array();
+	if ((!$cache->exists()) || (($ttl !== false) && ($cache->age() > $ttl))) {
+		$return = request_url($url, $post, $headers, $timeout, $connecttimeout);
+		$return['cacheHit'] = false;
+		if ($return['reply'] !== false) {
+			if ($validationCallback !== false) {
+				$res = $validationCallback($return);
+				$return['validation'] = $res;
+				if ($res === true) {
+					$cache->put($return['reply']);
+				}
+			} else {
+				$cache->put($return['reply']);
+			}
 		}
 	} else {
-		$return = $cache->get();
+		$return['reply'] = $cache->get();
+		$return['cacheHit'] = true;
 	}
 	return $return;
 }
