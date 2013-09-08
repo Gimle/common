@@ -17,13 +17,13 @@ namespace gimle\common;
  * @param bool $deleteRoot Also delete the root directory (Default: false)
  * @return void
  */
-function clear_dir ($path, $deleteRoot = false) {
+function clear_dir ($path, $deleteRoot = false)
+{
 	$files = glob(rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '*');
 	foreach ($files as $file) {
 		if ((is_dir($file)) && (!is_link($file))) {
 			clear_dir($file, true);
-		}
-		else {
+		} else {
 			unlink($file);
 		}
 	}
@@ -60,7 +60,8 @@ function locate_in_array_by_string ($input, $search, $separator = '.')
  * @param string $value
  * @return string
  */
-function parse_php ($value) {
+function parse_php ($value)
+{
 	ob_start();
 	$value = preg_replace('/\<\?([^php|^=])/', 'gimle-hopefully-safe-replace-string$1', $value);
 	eval('?>' . $value);
@@ -76,7 +77,8 @@ function parse_php ($value) {
  * @param string $size
  * @return int Number of bytes.
  */
-function string_to_bytes ($size) {
+function string_to_bytes ($size)
+{
 	$size = trim($size);
 	$last = strtolower(substr($size, -1));
 	$size = (int)$size;
@@ -96,7 +98,8 @@ function string_to_bytes ($size) {
  *
  * @return int Maximum number of bytes.
  */
-function get_upload_limit () {
+function get_upload_limit ()
+{
 	return (int)min(string_to_bytes(ini_get('post_max_size')), string_to_bytes(ini_get('upload_max_filesize')));
 }
 
@@ -110,34 +113,30 @@ function get_upload_limit () {
  * @param string $mode Default "auto", can be: "cli" or "web".
  * @return mixed void|string
  */
-function var_dump ($var, $return = false, $title = false, $background = false, $mode = 'auto') {
+function var_dump ($var, $return = false, $title = false, $background = false, $mode = 'auto')
+{
 	if ($background === false) {
 		if (!isset(System::$config['common']['background'])) {
 			$background = 'white';
-		}
-		else {
+		} else {
 			$background = System::$config['common']['background'];
 		}
 	}
 
 	if ($mode === 'auto') {
 		$webmode = (ENV_LEVEL & ENV_WEB ? true : false);
-	}
-	elseif ($mode === 'web') {
+	} elseif ($mode === 'web') {
 		$webmode = true;
-	}
-	elseif ($mode === 'cli') {
+	} elseif ($mode === 'cli') {
 		$webmode = false;
-	}
-	else {
+	} else {
 		trigger_error('Invalid mode.', E_USER_WARNING);
 	}
 
 	$fixDumpString = function ($name, $value, $htmlspecial = true) use (&$background, &$mode) {
 		if (in_array($name, array('[\'pass\']', '[\'password\']', '[\'PHP_AUTH_PW\']'))) {
 			$value = '********';
-		}
-		else {
+		} else {
 			$fix = array(
 				"\r\n" => colorize('¤¶', 'gray', $background, $mode) . "\n", // Windows linefeed.
 				"\n\r" => colorize('¶¤', 'gray', $background, $mode) . "\n\n", // Erronumous (might be interpeted as double) linefeed.
@@ -207,22 +206,17 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 				}
 			}
 			echo str_repeat($doDump_indent, $indent) . colorize(')', 'lightgray', $background, $mode);
-		}
-		elseif (is_string($var)) {
+		} elseif (is_string($var)) {
 			if ((isset($params['error'])) && ($params['error'] === true)) {
 				echo ' ' . colorize('=', 'black', $background, $mode) . ' ' . colorize('Error: ' . $fixDumpString($var_name, $var, $webmode), 'error', $background, $mode);
-			}
-			else {
+			} else {
 				echo ' ' . colorize('=', 'black', $background, $mode) . ' ' . colorize('String(' . strlen($var) . ')', 'gray', $background, $mode) . ' ' . colorize('\'' . $fixDumpString($var_name, $var, $webmode) . '\'', 'string', $background, $mode);
 			}
-		}
-		elseif (is_int($var)) {
+		} elseif (is_int($var)) {
 			echo ' ' . colorize('=', 'black', $background, $mode) . ' ' . colorize('Integer(' . strlen($var) . ')', 'gray', $background, $mode) . ' ' . colorize($var, 'int', $background, $mode);
-		}
-		elseif (is_bool($var)) {
+		} elseif (is_bool($var)) {
 			echo ' ' . colorize('=', 'black', $background, $mode) . ' ' . colorize('Boolean', 'gray', $background, $mode) . ' ' . colorize(($var === true ? 'true' : 'false'), 'bool', $background, $mode);
-		}
-		elseif (is_object($var)) {
+		} elseif (is_object($var)) {
 			$class = new \ReflectionObject($var);
 			$parents = '';
 			if ($parent = $class->getParentClass()) {
@@ -238,8 +232,7 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 			if ($var instanceof Iterator) {
 				echo ' ' . colorize('=>', 'black', $background, $mode) . ' ' . colorize($class->getName() . ' Object (Iterator)' . $parents, 'gray', $background, $mode) . "\n" . str_repeat($doDump_indent, $indent) . colorize('(', 'lightgray', $background, $mode) . "\n";
 				var_dump($var);
-			}
-			else {
+			} else {
 				echo ' ' . colorize('=>', 'black', $background, $mode) . ' ' . colorize($class->getName() . ' Object' . $parents , 'gray', $background, $mode) . "\n" . str_repeat($doDump_indent, $indent) . colorize('(', 'lightgray', $background, $mode) . "\n";
 
 				$dblcheck = array();
@@ -248,8 +241,7 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 						$key = ltrim($key, "\x0*");
 						if (substr($key, 0, strlen($class->getName())) === $class->getName()) {
 							$key = substr($key, (strlen($class->getName()) + 1));
-						}
-						else {
+						} else {
 							$parents = class_parents($var);
 							if (!empty($parents)) {
 								foreach ($parents as $parent) {
@@ -280,16 +272,14 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 						$error = false;
 						if ($prop->isPrivate()) {
 							$append .= ' private';
-						}
-						elseif ($prop->isProtected()) {
+						} elseif ($prop->isProtected()) {
 							$append .= ' protected';
 						}
 						$prop->setAccessible(true);
 						if ($prop->isStatic()) {
 							$value = $prop->getValue();
 							$append .= ' static';
-						}
-						else {
+						} else {
 							set_error_handler(function ($errno, $errstr) { throw new \Exception($errstr); });
 							try {
 								$value = $prop->getValue($var);
@@ -334,17 +324,13 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 			}
 			unset($class);
 			echo str_repeat($doDump_indent, $indent) . colorize(')', 'lightgray', $background, $mode);
-		}
-		elseif (is_null($var)) {
+		} elseif (is_null($var)) {
 			echo ' ' . colorize('=', 'black', $background, $mode) . ' ' . colorize('null', 'black', $background, $mode);
-		}
-		elseif (is_float($var)) {
+		} elseif (is_float($var)) {
 			echo ' ' . colorize('=', 'black', $background, $mode) . ' ' . colorize('Float(' . strlen($var) . ')', 'gray', $background) . ' ' . colorize($var, 'float', $background, $mode);
-		}
-		elseif (is_resource($var)) {
+		} elseif (is_resource($var)) {
 			echo ' ' . colorize('=', 'black', $background, $mode) . ' ' . colorize('Resource', 'gray', $background, $mode) . ' ' . $var;
-		}
-		else {
+		} else {
 			echo ' ' . colorize('=', 'black', $background, $mode) . ' ' . colorize('Unknown', 'gray', $background, $mode) . ' ' . $var;
 		}
 		echo "\n";
@@ -364,20 +350,17 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 		$backtrace = debug_backtrace();
 		if ((is_array($title)) && (isset($title['steps'])) && (isset($backtrace[$title['steps']]))) {
 			$backtrace = $backtrace[$title['steps']];
-		}
-		else {
+		} else {
 			$backtrace = $backtrace[0];
 		}
 		if (substr($backtrace['file'], -13) == 'eval()\'d code') {
 			$title = 'eval()';
-		}
-		else {
+		} else {
 			$con = explode("\n", file_get_contents($backtrace['file']));
 			$callee = $con[$backtrace['line'] - 1];
 			if ((is_array($title)) && (isset($title['match']))) {
 				preg_match($title['match'], $callee, $matches);
-			}
-			else {
+			} else {
 				preg_match('/([a-zA-Z\\\\]+|)var_dump\((.*)/', $callee, $matches);
 			}
 			if (!empty($matches)) {
@@ -399,8 +382,7 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 					}
 					$title .= $value;
 				}
-			}
-			else {
+			} else {
 				$title = 'Unknown dump string';
 			}
 		}
@@ -425,7 +407,8 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
  * @param int $which Which key to look for.
  * @return mixed bool|string key as string, or false if fail.
  */
-function array_key (array $arr = array(), $which = 0) {
+function array_key (array $arr = array(), $which = 0)
+{
 	$keys = array_keys($arr);
 	if ($which < 0) {
 		$keys = array_reverse($keys);
@@ -447,7 +430,8 @@ function array_key (array $arr = array(), $which = 0) {
  * @param int $which Which key to look for.
  * @return mixed Value, or false if fail.
  */
-function array_value (array $arr = array (), $which = 0) {
+function array_value (array $arr = array (), $which = 0)
+{
 	if ($key = array_key($arr, $which)) {
 		return $arr[$key];
 	}
@@ -460,7 +444,8 @@ function array_value (array $arr = array (), $which = 0) {
  * @param int $length Number of characters.
  * @return string
  */
-function generate_password ($length = 8) {
+function generate_password ($length = 8)
+{
 	$var = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 	$len = strlen($var);
 	$return = '';
@@ -477,7 +462,8 @@ function generate_password ($length = 8) {
  * @param bool $weeks Telling if weeks should be included. (Default is false)
  * @return array
  */
-function seconds_to_array ($time, $weeks = false) {
+function seconds_to_array ($time, $weeks = false)
+{
 	$time = str_replace(',', '.', $time);
 	$value['years'] = 0;
 	if ($weeks === true) {
@@ -513,7 +499,8 @@ function seconds_to_array ($time, $weeks = false) {
  *
  * @return string Human readable time string.
  */
-function run_time () {
+function run_time ()
+{
 	$microtime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
 	$ttr = seconds_to_array($microtime);
 	$microtime = str_replace(',', '.', $microtime);
@@ -549,7 +536,8 @@ function run_time () {
  * @param int $decimals optional Number of decimals to include in string.
  * @return array containing prefix, float value and readable string.
  */
-function bytes_to_array ($filesize = 0, $decimals = 2) {
+function bytes_to_array ($filesize = 0, $decimals = 2)
+{
 	$return = array();
 	$count = 0;
 	$units = array('', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y');
@@ -573,7 +561,8 @@ function bytes_to_array ($filesize = 0, $decimals = 2) {
  * @param string $exec Command
  * @return array
  */
-function run ($exec) {
+function run ($exec)
+{
 	$filename = tempnam(TEMP_DIR, 'tmp_');
 	touch($filename);
 	exec($exec . ' 2> ' . $filename, $stout, $return);
@@ -601,7 +590,8 @@ function run ($exec) {
  * );
  * </pre>
  */
-function run_bg ($command) {
+function run_bg ($command)
+{
 	$tmpdir = make_temp_file(false, 'php_run_bg' . DIRECTORY_SEPARATOR, false, true);
 	file_put_contents($tmpdir . 'exec', $command);
 	exec(sprintf("%s > %s 2> %s & echo $! > %s", $command, $tmpdir . 'stout', $tmpdir . 'sterr', $tmpdir . 'pid'));
@@ -615,7 +605,8 @@ function run_bg ($command) {
  * @param string $store
  * @return mixed
  */
-function run_bg_status ($store) {
+function run_bg_status ($store)
+{
 	if (file_exists($store)) {
 		$pid = (int)trim(file_get_contents($store . 'pid'));
 		$exec = file_get_contents($store . 'exec');
@@ -642,7 +633,8 @@ function run_bg_status ($store) {
  * @param mixed $store false to clean all, or a specific store to clean.
  * @return mixed
  */
-function run_bg_clean ($store) {
+function run_bg_clean ($store)
+{
 	$dir = TEMP_DIR . 'php_run_bg' . DIRECTORY_SEPARATOR;
 	if (file_exists($dir)) {
 		if ($store === false) {
@@ -654,15 +646,13 @@ function run_bg_clean ($store) {
 					if ((isset($status['running'])) && ($status['running'] === false)) {
 						$cleaned++;
 						exec('rm -rf ' . $dir . $fileinfo->getFilename() . DIRECTORY_SEPARATOR);
-					}
-					else {
+					} else {
 						$running++;
 					}
 				}
 			}
 			return array('cleaned' => $cleaned, 'running' => $running);
-		}
-		elseif (file_exists($store)) {
+		} elseif (file_exists($store)) {
 			exec('rm -rf ' . $store);
 			return true;
 		}
@@ -677,7 +667,8 @@ function run_bg_clean ($store) {
  * @param int $b Non-zero integer.
  * @return int
  */
-function gcd ($a, $b) {
+function gcd ($a, $b)
+{
 	$b = (($a == 0) ? 0 : $b);
 	return (($a % $b) ? gcd($b, abs($a - $b)) : $b);
 }
@@ -688,7 +679,8 @@ function gcd ($a, $b) {
  * @param int $num Number.
  * @return string Roman number.
  */
-function number_to_roman ($num) {
+function number_to_roman ($num)
+{
 	$numbers = array(
 		'M'  => 1000,
 		'CM' => 900,
@@ -723,7 +715,8 @@ function number_to_roman ($num) {
  * @param string $ending Cutted string ending (Default: …).
  * @return string Result.
  */
-function cut_string ($string, $limit, $byword = true, $ending = '…') {
+function cut_string ($string, $limit, $byword = true, $ending = '…')
+{
 	if (mb_strlen($string) > $limit + 1) {
 		$string = mb_substr($string, 0, $limit - 1);
 		$string = rtrim($string);
@@ -749,7 +742,8 @@ function cut_string ($string, $limit, $byword = true, $ending = '…') {
  * @param bool $getStyle return the style only (Default false).
  * @return string
  */
-function colorize ($content, $color, $background = false, $mode = 'auto', $getStyle = false) {
+function colorize ($content, $color, $background = false, $mode = 'auto', $getStyle = false)
+{
 	if ((isset(System::$config['common']['colorize'])) && (System::$config['common']['colorize'] === false)) {
 		return $content;
 	}
@@ -757,32 +751,26 @@ function colorize ($content, $color, $background = false, $mode = 'auto', $getSt
 	if ($background === false) {
 		if (!isset(System::$config['common']['background'])) {
 			$background = 'white';
-		}
-		else {
+		} else {
 			$background = System::$config['common']['background'];
 		}
 	}
 
 	if ($mode === 'auto') {
 		$climode = (ENV_LEVEL & ENV_CLI ? true : false);
-	}
-	elseif ($mode === 'web') {
+	} elseif ($mode === 'web') {
 		$climode = false;
-	}
-	elseif ($mode === 'cli') {
+	} elseif ($mode === 'cli') {
 		$climode = true;
-	}
-	else {
+	} else {
 		trigger_error('Invalid mode.', E_USER_WARNING);
 	}
 
 	if ($climode) {
 		$template = "\033[%sm%s\033[0m";
-	}
-	elseif ($getStyle === false) {
+	} elseif ($getStyle === false) {
 		$template = '<span style="color: %s;">%s</span>';
-	}
-	else {
+	} else {
 		$template = 'color: %s;';
 	}
 	if (substr($color, 0, 6) === 'range:') {
@@ -794,8 +782,7 @@ function colorize ($content, $color, $background = false, $mode = 'auto', $getSt
 					return sprintf($template, '38;5;9', $content);
 				}
 				return sprintf($template, '#ff0000', $content);
-			}
-			elseif ($climode) {
+			} elseif ($climode) {
 				if ($state < 0.1) {
 					return sprintf($template, '38;5;2', $state);
 				}
@@ -815,41 +802,34 @@ function colorize ($content, $color, $background = false, $mode = 'auto', $getSt
 					return sprintf($template, '38;5;178', $state);
 				}
 				return sprintf($template, '38;5;166', $state);
-			}
-			elseif ($state === 0.5) {
+			} elseif ($state === 0.5) {
 				if ($climode) {
 					return sprintf($template, '38;5;11', $content);
 				}
 				return sprintf($template, '#ffff00', $content);
-			}
-			elseif ($state < 0.5) {
+			} elseif ($state < 0.5) {
 				return sprintf($template, '#' . str_pad(dechex(round($state * 511)), 2, '0', STR_PAD_LEFT) . 'ff00', $content);
-			}
-			else {
+			} else {
 				$state = (0.5 - ($state - 0.5));
 				return sprintf($template, '#ff' . str_pad(dechex(round(($state) * 511)), 2, '0', STR_PAD_LEFT) . '00', $content);
 			}
 		}
-	}
-	elseif ($color === 'gray') {
+	} elseif ($color === 'gray') {
 		if ($climode) {
 			return sprintf($template, '38;5;240', $content);
 		}
 		return sprintf($template, 'gray', $content);
-	}
-	elseif ($color === 'string') {
+	} elseif ($color === 'string') {
 		if ($climode) {
 			return sprintf($template, '38;5;46', $content);
 		}
 		return sprintf($template, 'green', $content);
-	}
-	elseif ($color === 'int') {
+	} elseif ($color === 'int') {
 		if ($climode) {
 			return sprintf($template, '38;5;196', $content);
 		}
 		return sprintf($template, 'red', $content);
-	}
-	elseif ($color === 'lightgray') {
+	} elseif ($color === 'lightgray') {
 		if ($background === 'black') {
 			if ($climode) {
 				return sprintf($template, '38;5;240', $content);
@@ -860,38 +840,32 @@ function colorize ($content, $color, $background = false, $mode = 'auto', $getSt
 			return sprintf($template, '38;5;251', $content);
 		}
 		return sprintf($template, 'lightgray', $content);
-	}
-	elseif ($color === 'bool') {
+	} elseif ($color === 'bool') {
 		if ($climode) {
 			return sprintf($template, '38;5;57', $content);
 		}
 		return sprintf($template, 'purple', $content);
-	}
-	elseif ($color === 'float') {
+	} elseif ($color === 'float') {
 		if ($climode) {
 			return sprintf($template, '38;5;39', $content);
 		}
 		return sprintf($template, 'dodgerblue', $content);
-	}
-	elseif ($color === 'error') {
+	} elseif ($color === 'error') {
 		if ($climode) {
 			return sprintf($template, '38;5;198', $content);
 		}
 		return sprintf($template, 'deeppink', $content);
-	}
-	elseif ($color === 'recursion') {
+	} elseif ($color === 'recursion') {
 		if ($climode) {
 			return sprintf($template, '38;5;208', $content);
 		}
 		return sprintf($template, 'darkorange', $content);
-	}
-	elseif ($background === 'black') {
+	} elseif ($background === 'black') {
 		if ($climode) {
 			return sprintf($template, '38;5;256', $content);
 		}
 		return sprintf($template, 'white', $content);
-	}
-	else {
+	} else {
 		return $content;
 	}
 }
@@ -906,7 +880,8 @@ function colorize ($content, $color, $background = false, $mode = 'auto', $getSt
  * @param int $connecttimeout How many seconds to wait for connection. (Default 1).
  * @return mixed false|array
  */
-function request_url ($url, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1) {
+function request_url ($url, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1)
+{
 	$return = array();
 
 	$ch = curl_init();
@@ -950,7 +925,8 @@ function request_url ($url, $post = false, $headers = false, $timeout = 1, $conn
  * @param string $xmlstring
  * @return mixed false|object SimpleXMLElement
  */
-function load_xml ($xmlstring) {
+function load_xml ($xmlstring)
+{
 	$cond = libxml_use_internal_errors(true);
 	$xml = simplexml_load_string((string)$xmlstring);
 	if ($cond !== true) {
@@ -971,7 +947,8 @@ function load_xml ($xmlstring) {
  * @param int $connecttimeout How many seconds to wait for connection. (Default 1).
  * @return mixed false|object SimpleXMLElement
  */
-function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1) {
+function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1)
+{
 	$filename = preg_replace('/[\/?*:;{}\\\\]/', '★', $url);
 	$cache = new Cache('gimle/common/get_xml/' . $filename);
 
@@ -984,8 +961,7 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 		if ($return !== false) {
 			$cache->put($xml['reply']);
 		}
-	}
-	else {
+	} else {
 		$reload = false;
 		if (($xpath === false) && ($ttl !== false) && ($cache->age() > $ttl)) {
 			/* No xpath, and time ran out, so setting flag to get new cache. */
@@ -998,8 +974,7 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 				$expire = (string)$expire[0];
 				if (ctype_digit($expire)) {
 					$expire = (int)$expire;
-				}
-				else {
+				} else {
 					$expire = strtotime($expire);
 				}
 				if ($expire < time()) {
@@ -1020,19 +995,18 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 			if ((isset($simplexml)) && ($simplexml !== false)) {
 				$cache->put($xml['reply']);
 				$return = $simplexml;
-			}
-			elseif ($xpath === false) {
+			} elseif ($xpath === false) {
 				$return = simplexml_load_string($cache->get());
 			}
-		}
-		else {
+		} else {
 			$return = simplexml_load_string($cache->get());
 		}
 	}
 	return $return;
 }
 
-function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1) {
+function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1)
+{
 	$filename = preg_replace("#[^\pL _\-'\.,0-9]#iu", '_', $url);
 	$cache = new Cache('gimle/common/get_file/' . $filename);
 
@@ -1043,15 +1017,13 @@ function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout =
 			$cache->put($result['reply']);
 			$return = $result['reply'];
 		}
-	}
-	elseif (($ttl !== false) && ($cache->age() > $ttl)) {
+	} elseif (($ttl !== false) && ($cache->age() > $ttl)) {
 		$result = request_url($url, $post, $headers, $timeout, $connecttimeout);
 		if ($result['reply'] !== false) {
 			$cache->put($result['reply']);
 			$return = $result['reply'];
 		}
-	}
-	else {
+	} else {
 		$return = $cache->get();
 	}
 	return $return;
@@ -1062,7 +1034,8 @@ function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout =
  *
  * @return array
  */
-function get_html_translation_table ($append = array()) {
+function get_html_translation_table ($append = array())
+{
 	$table = array();
 
 	/* Load the full php 5.4 translation table for all php versions */
@@ -1070,8 +1043,7 @@ function get_html_translation_table ($append = array()) {
 		foreach (\get_html_translation_table(HTML_ENTITIES, null, mb_internal_encoding()) as $key => $value) {
 			$table[$value] = $key;
 		}
-	}
-	else {
+	} else {
 		foreach (\get_html_translation_table(HTML_ENTITIES) as $key => $value) {
 			$table[$value] = utf8_encode($key);
 		}
@@ -1080,8 +1052,7 @@ function get_html_translation_table ($append = array()) {
 		foreach (\get_html_translation_table(HTML_ENTITIES, ENT_HTML5 | ENT_QUOTES, mb_internal_encoding()) as $key => $value) {
 			$table[$value] = $key;
 		}
-	}
-	else {
+	} else {
 		include System::$config['extensions']['common'] . 'inc' . DIRECTORY_SEPARATOR . 'ent.php';
 		$table = array_merge($table, $html5);
 	}
@@ -1109,7 +1080,8 @@ function get_html_translation_table ($append = array()) {
  * @param int $num
  * @return string
  */
-function code2utf8 ($num) {
+function code2utf8 ($num)
+{
 	if ($num < 128) {
 		return chr($num);
 	}
@@ -1132,7 +1104,8 @@ function code2utf8 ($num) {
  * @param array $exclude
  * @return string
  */
-function ent2utf8 ($string, $exclude = array('&', ';'), $append = array()) {
+function ent2utf8 ($string, $exclude = array('&', ';'), $append = array())
+{
 	$html_translation_table = array();
 	foreach (get_html_translation_table($append) as $key => $value) {
 		if (!in_array($value, $exclude)) {
@@ -1154,7 +1127,8 @@ function ent2utf8 ($string, $exclude = array('&', ';'), $append = array()) {
  * @param array $exclude
  * @return string
  */
-function utf82ent ($string, $exclude = array('.', ',', '-'), $append = array()) {
+function utf82ent ($string, $exclude = array('.', ',', '-'), $append = array())
+{
 	$html_translation_table = array();
 	foreach (get_html_translation_table($append) as $key => $value) {
 		if (!in_array($value, $exclude)) {
@@ -1173,7 +1147,8 @@ function utf82ent ($string, $exclude = array('.', ',', '-'), $append = array()) 
  * @param string|false $exclude Regular expression for excluded characters.
  * @return string
  */
-function bin2htmlhex ($string, $exclude = '[\pL\pM\pS\pN\pP ]') {
+function bin2htmlhex ($string, $exclude = '[\pL\pM\pS\pN\pP ]')
+{
 	$return = '';
 	$block = false;
 	for ($i = 0; $i < mb_strlen($string); $i++) {
@@ -1216,7 +1191,8 @@ function bin2htmlhex ($string, $exclude = '[\pL\pM\pS\pN\pP ]') {
  * @param array $avail A list of the available languages.
  * @return mixed false|string
  */
-function get_preferred_language (array $avail) {
+function get_preferred_language (array $avail)
+{
 	$return = false;
 	if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
 		$client = explode(',', strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
@@ -1228,8 +1204,7 @@ function get_preferred_language (array $avail) {
 						$return = $matches[1];
 						$hitrate = (float)$matches[2];
 					}
-				}
-				elseif (in_array($langstr, $avail)) {
+				} elseif (in_array($langstr, $avail)) {
 					return $langstr;
 				}
 			}
@@ -1247,7 +1222,8 @@ function get_preferred_language (array $avail) {
  * @param string $as_dir optional Create a directory instead of file.
  * @return string Full path and name of the new temp file.
  */
-function make_temp_file ($dir = false, $prefix = false, $suffix = false, $as_dir = false) {
+function make_temp_file ($dir = false, $prefix = false, $suffix = false, $as_dir = false)
+{
 	$name = generate_password();
 	if ($dir === false) {
 		$dir = TEMP_DIR;
@@ -1261,8 +1237,7 @@ function make_temp_file ($dir = false, $prefix = false, $suffix = false, $as_dir
 	if (!file_exists($dir . $name)) {
 		if ($as_dir === false) {
 			touch($dir . $name);
-		}
-		else {
+		} else {
 			$name .= DIRECTORY_SEPARATOR;
 			mkdir($dir . $name, 0777, true);
 		}
@@ -1271,12 +1246,12 @@ function make_temp_file ($dir = false, $prefix = false, $suffix = false, $as_dir
 	return make_temp_file($dir, $prefix, $suffix, $as_dir);
 }
 
-function pathinfo ($path, $options = false) {
+function pathinfo ($path, $options = false)
+{
 	$pathinfo = \pathinfo($path);
 	if (($pathinfo['dirname'] === '.') && (substr($path, 0, 1) !== '.')) {
 		$pathinfo['dirname'] = '';
-	}
-	else {
+	} else {
 		$pathinfo['dirname'] .= DIRECTORY_SEPARATOR;
 	}
 	$pathinfo['complete'] = $path;
@@ -1288,8 +1263,7 @@ function pathinfo ($path, $options = false) {
 		}
 		if ($options & PATHINFO_BASENAME) {
 			$return .= $pathinfo['basename'];
-		}
-		else {
+		} else {
 			if ($options & PATHINFO_FILENAME) {
 				$return .= $pathinfo['filename'];
 			}
@@ -1303,7 +1277,8 @@ function pathinfo ($path, $options = false) {
 	return $pathinfo;
 }
 
-function file_exists_ssh ($server, $filename) {
+function file_exists_ssh ($server, $filename)
+{
 	$exec = 'if ssh ' . $server . ' stat ' . $filename . ' \> /dev/null 2\>\&1; then echo true; else echo false; fi';
 	$res = run($exec);
 	if (($res['return'] === 0) && (isset($res['stout'][0]))) {
@@ -1316,7 +1291,8 @@ function file_exists_ssh ($server, $filename) {
 	return null;
 }
 
-function mkdir_ssh ($server, $pathname, $mode = 0777, $recursive = false) {
+function mkdir_ssh ($server, $pathname, $mode = 0777, $recursive = false)
+{
 	$exec = 'ssh ' . $server . ' mkdir -m ' . decoct($mode) . ' ';
 	if ($recursive === true) {
 		$exec .= '-p ';
@@ -1329,7 +1305,8 @@ function mkdir_ssh ($server, $pathname, $mode = 0777, $recursive = false) {
 	return $res;
 }
 
-function chown_ssh ($server, $filename, $user) {
+function chown_ssh ($server, $filename, $user)
+{
 	$exec = 'ssh ' . $server . ' chown ' . $user . ' ' . $filename;
 	$res = run($exec);
 	if (($res['return'] === 0) && (empty($res['stout'])) && (isset($res['sterr'][0])) && (!isset($res['sterr'][1])) && ($res['sterr'][0] === '')) {
@@ -1338,7 +1315,8 @@ function chown_ssh ($server, $filename, $user) {
 	return $res;
 }
 
-function chgrp_ssh ($server, $filename, $group) {
+function chgrp_ssh ($server, $filename, $group)
+{
 	$exec = 'ssh ' . $server . ' chgrp ' . $group . ' ' . $filename;
 	$res = run($exec);
 	if (($res['return'] === 0) && (empty($res['stout'])) && (isset($res['sterr'][0])) && (!isset($res['sterr'][1])) && ($res['sterr'][0] === '')) {
