@@ -954,8 +954,8 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 	$cache = new Cache('gimle/common/get_xml/' . $filename);
 
 	$return = array();
-	$cacheHit = false;
 	if (!$cache->exists()) {
+		$cacheHit = null;
 		$return = request_url($url, $post, $headers, $timeout, $connecttimeout);
 		if ($return['reply'] !== false) {
 			$cacheStr = $return['reply'];
@@ -973,6 +973,7 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 			}
 		}
 	} else {
+		$cacheHit = false;
 		$reload = false;
 		if (($xpath === false) && ($ttl !== false) && ($cache->age() > $ttl)) {
 			/* No xpath, and time ran out, so setting flag to get new cache. */
@@ -1049,7 +1050,11 @@ function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout =
 	$return = array();
 	if ((!$cache->exists()) || (($ttl !== false) && ($cache->age() > $ttl))) {
 		$return = request_url($url, $post, $headers, $timeout, $connecttimeout);
-		$return['cacheHit'] = false;
+		if (!$cache->exists()) {
+			$return['cacheHit'] = null;
+		} else {
+			$return['cacheHit'] = false;
+		}
 		if ($return['reply'] !== false) {
 			if ($validationCallback !== false) {
 				$res = $validationCallback($return);
