@@ -958,6 +958,7 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 	if (!$cache->exists()) {
 		$return = request_url($url, $post, $headers, $timeout, $connecttimeout);
 		if ($return['reply'] !== false) {
+			$cacheStr = $return['reply'];
 			$return['reply'] = load_xml($return['reply']);
 		}
 		if ($return['reply'] !== false) {
@@ -965,10 +966,10 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 				$res = $validationCallback($return);
 				$return['validation'] = $res;
 				if ($res === true) {
-					$cache->put($return['reply']);
+					$cache->put($cacheStr);
 				}
 			} else {
-				$cache->put($return['reply']);
+				$cache->put($cacheStr);
 			}
 		}
 	} else {
