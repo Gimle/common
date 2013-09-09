@@ -1004,7 +1004,9 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 			}
 			if ((isset($simplexml)) && ($simplexml !== false)) {
 				if ($validationCallback !== false) {
-					$res = $validationCallback($return);
+					$callback = $return;
+					$callback['reply'] = $simplexml;
+					$res = $validationCallback($callback);
 					$return['validation'] = $res;
 					if ($res === true) {
 						$cache->put($return['reply']);
