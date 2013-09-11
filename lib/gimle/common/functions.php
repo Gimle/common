@@ -1061,6 +1061,10 @@ function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout =
 				$return['validation'] = $res;
 				if ($res === true) {
 					$cache->put($return['reply']);
+				} elseif (is_string($res)) {
+					$return['validation'] = true;
+					$return['reply'] = $res;
+					$cache->put($res);
 				}
 			} else {
 				$cache->put($return['reply']);
