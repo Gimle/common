@@ -1060,10 +1060,17 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
  * @param mixed $validationCallback false or a callback function for validating before storing the cache.
  * @return array
  */
-function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1, $validationCallback = false)
+function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout = 1, $connecttimeout = 1, $validationCallback = false, $cacheName = false)
 {
-	$filename = preg_replace("#[^\pL _\-'\.,0-9]#iu", '_', $url);
-	$cache = new Cache('gimle/common/get_file/' . $filename);
+	if ($cacheName === false) {
+		$cacheName = 'gimle/common/get_file/' . preg_replace('/[\/?*:;{}\\\\]/', '★', $url);
+		if ($post !== false) {
+			$cacheName .= '[' . preg_replace('/[\/?*:;{}\\\\]/', '★', json_encode($post)) . ']';
+		}
+	} elseif ($ttl === null) {
+		return request_url($url, $post, $headers, $timeout, $connecttimeout);
+	}
+	$cache = new Cache($cacheName);
 
 	$return = array();
 	$validation = null;
@@ -1089,6 +1096,9 @@ function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout =
 			} else {
 				$cache->put($return['reply']);
 			}
+		} elseif ($cache->exists()) {
+			$return['reply'] = $cache->get();
+			$cacheHit = true;
 		}
 	} else {
 		$return['reply'] = $cache->get();
