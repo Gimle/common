@@ -954,6 +954,7 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 	$cache = new Cache('gimle/common/get_xml/' . $filename);
 
 	$return = array();
+	$validation = null;
 	if (!$cache->exists()) {
 		$cacheHit = null;
 		$return = request_url($url, $post, $headers, $timeout, $connecttimeout);
@@ -964,9 +965,14 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 		if ($return['reply'] !== false) {
 			if ($validationCallback !== false) {
 				$res = $validationCallback($return);
-				$return['validation'] = $res;
+				$validation = false;
 				if ($res === true) {
+					$validation = true;
 					$cache->put($cacheStr);
+				} elseif (is_string($res)) {
+					$validation = true;
+					$return['reply'] = $res;
+					$cache->put($res);
 				}
 			} else {
 				$cache->put($cacheStr);
@@ -1004,28 +1010,40 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 			if ($return['reply'] !== false) {
 				$simplexml = load_xml($return['reply']);
 			}
+			$validation = false;
 			if ((isset($simplexml)) && ($simplexml !== false)) {
+				$validation = true;
 				if ($validationCallback !== false) {
 					$callback = $return;
 					$callback['reply'] = $simplexml;
 					$res = $validationCallback($callback);
 					$return['validation'] = $res;
+					$validation = false;
 					if ($res === true) {
+						$validation = true;
+						$cacheHit = false;
 						$cache->put($return['reply']);
+					} elseif (is_string($res)) {
+						$validation = true;
+						$cacheHit = false;
+						$return['reply'] = $res;
+						$cache->put($res);
 					}
 				} else {
+					$cacheHit = false;
 					$cache->put($return['reply']);
 				}
 				$return['reply'] = $simplexml;
 			} elseif ($xpath === false) {
-				$return['reply'] = simplexml_load_string($cache->get());
 				$cacheHit = true;
+				$return['reply'] = simplexml_load_string($cache->get());
 			}
 		} else {
-			$return['reply'] = simplexml_load_string($cache->get());
 			$cacheHit = true;
+			$return['reply'] = simplexml_load_string($cache->get());
 		}
 	}
+	$return['validation'] = $validation;
 	$return['cacheHit'] = $cacheHit;
 	return $return;
 }
@@ -1048,21 +1066,23 @@ function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout =
 	$cache = new Cache('gimle/common/get_file/' . $filename);
 
 	$return = array();
+	$validation = null;
 	if ((!$cache->exists()) || (($ttl !== false) && ($cache->age() > $ttl))) {
 		$return = request_url($url, $post, $headers, $timeout, $connecttimeout);
 		if (!$cache->exists()) {
-			$return['cacheHit'] = null;
+			$cacheHit = null;
 		} else {
-			$return['cacheHit'] = false;
+			$cacheHit = false;
 		}
 		if ($return['reply'] !== false) {
 			if ($validationCallback !== false) {
 				$res = $validationCallback($return);
-				$return['validation'] = $res;
+				$validation = false;
 				if ($res === true) {
+					$validation = true;
 					$cache->put($return['reply']);
 				} elseif (is_string($res)) {
-					$return['validation'] = true;
+					$validation = true;
 					$return['reply'] = $res;
 					$cache->put($res);
 				}
@@ -1072,8 +1092,10 @@ function get_file ($url, $ttl = 600, $post = false, $headers = false, $timeout =
 		}
 	} else {
 		$return['reply'] = $cache->get();
-		$return['cacheHit'] = true;
+		$cacheHit = true;
 	}
+	$return['validation'] = $validation;
+	$return['cacheHit'] = $cacheHit;
 	return $return;
 }
 
