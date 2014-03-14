@@ -1267,8 +1267,13 @@ function bin2htmlhex ($string, $exclude = '[\pL\pM\pS\pN\pP ]')
  * @param array $avail A list of the available languages.
  * @return mixed false|string
  */
-function get_preferred_language (array $avail)
+function get_preferred_language (array $avail, array $synonyms = array())
 {
+	if (!empty($synonyms)) {
+		$mergedAvail = array_merge($avail, array_keys($synonyms));
+	} else {
+		$mergedAvail = $avail;
+	}
 	$return = false;
 	if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
 		$client = explode(',', strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
@@ -1276,15 +1281,24 @@ function get_preferred_language (array $avail)
 		if (!empty($client)) {
 			foreach ($client as $langstr) {
 				if (preg_match('/(.*);q=([0-1]{0,1}\.\d{0,4})/', $langstr, $matches)) {
-					if (($hitrate < (float)$matches[2]) && (in_array($matches[1], $avail))) {
+					if (($hitrate < (float)$matches[2]) && (in_array($matches[1], $mergedAvail))) {
 						$return = $matches[1];
 						$hitrate = (float)$matches[2];
 					}
-				} elseif (in_array($langstr, $avail)) {
+				} elseif (in_array($langstr, $mergedAvail)) {
+					if (isset($synonyms[$langstr])) {
+						return $synonyms[$langstr];
+					}
 					return $langstr;
 				}
 			}
 		}
+	}
+	if ($return === false) {
+		return false;
+	}
+	if (isset($synonyms[$return])) {
+		return $synonyms[$return];
 	}
 	return $return;
 }
