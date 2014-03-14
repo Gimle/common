@@ -63,7 +63,7 @@ class Canvas {
 	 */
 	public static function _load ($filename) {
 		ob_start();
-		require $filename;
+		include $filename;
 		$canvas = ob_get_contents();
 		ob_end_clean();
 		Canvas::_start(parse_php($canvas));
@@ -181,8 +181,7 @@ class Canvas {
 								include $file;
 								$current .= ob_get_contents();
 								ob_end_clean();
-							}
-							else {
+							} else {
 								$current .= file_get_contents($file);
 							}
 						}
@@ -225,8 +224,7 @@ class Canvas {
 								include $file;
 								$current .= ob_get_contents();
 								ob_end_clean();
-							}
-							else {
+							} else {
 								$current .= file_get_contents($file);
 							}
 						}
@@ -278,16 +276,13 @@ class Canvas {
 		if (!isset($params[1])) {
 			if (($params[0] !== null) && (!is_bool($params[0]))) {
 				self::$magic[$method] = array($params[0]);
-			}
-			elseif ($params[0] === null) {
+			} elseif ($params[0] === null) {
 				unset(self::$magic[$method]);
 			}
-		}
-		else {
+		} else {
 			if (($params[1] !== null) && (!is_bool($params[1]))) {
 				self::$magic[$method][$params[1]] = $params[0];
-			}
-			elseif ($params[1] === true) {
+			} elseif ($params[1] === true) {
 				self::$magic[$method][] = $params[0];
 			}
 		}

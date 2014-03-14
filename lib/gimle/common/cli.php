@@ -60,38 +60,32 @@ class Cli {
 					array_pop($_SERVER['options']);
 					if (substr($nextMightBeValue, 0, 2) === '--') {
 						$_SERVER['options'][trim($nextMightBeValue, '-')] = $value;
-					}
-					else {
+					} else {
 						$keys = str_split(substr($nextMightBeValue, 1));
 
 						$total = count($keys);
 						for ($i = 0; $i < $total; $i++) {
 							if ($i == $total - 1) {
 								$_SERVER['options'][$keys[$i]] = $value;
-							}
-							else {
+							} else {
 								$_SERVER['options'][$keys[$i]] = true;
 							}
 						}
 					}
 					$nextMightBeValue = false;
-				}
-				elseif ($nextMightBeValue) {
+				} elseif ($nextMightBeValue) {
 					if (substr($value, 0, 2) === '--') {
 						$_SERVER['options'][trim($value, '-')] = true;
-					}
-					else {
+					} else {
 						$keys = str_split(trim($value, '-'));
 						foreach ($keys as $value2) {
 							$_SERVER['options'][$value2] = true;
 						}
 					}
-				}
-				else {
+				} else {
 					$_SERVER['params'][] = $value;
 				}
-			}
-			else {
+			} else {
 				$nextMightBeValue = false;
 			}
 		}
@@ -117,20 +111,17 @@ class Cli {
 			echo self::color('This script can not run without arguments.', 'red') . "\n";
 			echo "\n - For a list of available commands, use --help\n\n";
 			self::terminate();
-		}
-		elseif (isset($_SERVER['options']['help'])) {
+		} elseif (isset($_SERVER['options']['help'])) {
 			echo "\n";
 			if ($description !== false) {
 				echo $description;
-			}
-			else {
+			} else {
 				echo 'No description.';
 			}
 			if (!empty($options)) {
 				echo "\n\nOptions:\n";
 				echo self::createHelp($options);
-			}
-			else {
+			} else {
 				echo "\n";
 			}
 			exit("\n");
@@ -155,16 +146,13 @@ class Cli {
 			if (!isset($_SERVER['options']['quiet'])) {
 				$return = self::color('Info:', 'light_blue') . ' ' . $message . "\n";
 			}
-		}
-		elseif ($type === 'user') {
+		} elseif ($type === 'user') {
 			$return = self::color('User:', 'purple') . ' ' . $message . "\n";
-		}
-		elseif ($type === 'debug') {
+		} elseif ($type === 'debug') {
 			if (isset($_SERVER['options']['debug'])) {
 				$return = self::color('Debug:', 'brown') . ' ' . $message . "\n";
 			}
-		}
-		elseif ($type === 'error') {
+		} elseif ($type === 'error') {
 			$return = self::color('Error:', 'red') . ' ' . $message . "\n";
 			$message = date('Y-m-d H:i:s') . ': ' . $message;
 		}
@@ -175,18 +163,18 @@ class Cli {
 		$ttr = \gimle\common\seconds_to_array(microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']);
 		$time = '';
 		if ($ttr['years'] !== 0) {
-			$time .=  $ttr['years'] . ' year' . (($ttr['years'] > 1) ? 's' : '') . ' ';
+			$time .= $ttr['years'] . ' year' . (($ttr['years'] > 1) ? 's' : '') . ' ';
 		}
 		if ($ttr['days'] !== 0) {
-			$time .=  $ttr['days'] . ' day' . (($ttr['days'] > 1) ? 's' : '') . ' ';
+			$time .= $ttr['days'] . ' day' . (($ttr['days'] > 1) ? 's' : '') . ' ';
 		}
 		if ($ttr['hours'] !== 0) {
-			$time .=  $ttr['hours'] . ' hour' . (($ttr['hours'] > 1) ? 's' : '') . ' ';
+			$time .= $ttr['hours'] . ' hour' . (($ttr['hours'] > 1) ? 's' : '') . ' ';
 		}
 		if ($ttr['minutes'] !== 0) {
-			$time .=  $ttr['minutes'] . ' minute' . (($ttr['minutes'] > 1) ? 's' : '') . ' ';
+			$time .= $ttr['minutes'] . ' minute' . (($ttr['minutes'] > 1) ? 's' : '') . ' ';
 		}
-		$time .=  $ttr['seconds'] . ' second' . (($ttr['seconds'] != 1) ? 's' : '');
+		$time .= $ttr['seconds'] . ' second' . (($ttr['seconds'] != 1) ? 's' : '');
 		return $time;
 	}
 
@@ -202,8 +190,7 @@ class Cli {
 			$return .= '  ';
 			if (isset($value['short'])) {
 				$return .= '-' . $value['short'] . ', ';
-			}
-			else {
+			} else {
 				$return .= '    ';
 			}
 			$return .= '--' . str_pad($key, $len + 2, ' ', STR_PAD_RIGHT);
@@ -229,8 +216,7 @@ class Cli {
 			if (($foreground) && (isset(self::$foreground_colors[$foreground]))) {
 				if (self::$returnType === 'terminal') {
 					$return .= "\033[" . self::$foreground_colors[$foreground] . 'm';
-				}
-				elseif (self::$returnType === 'html') {
+				} elseif (self::$returnType === 'html') {
 					$return .= '<span style="display: inline-block; color: #' . self::$foreground_html[$foreground] . ';">';
 				}
 			}
@@ -241,12 +227,10 @@ class Cli {
 			$return .= $string;
 			if (self::$returnType == 'terminal') {
 				$return .= "\033[0m";
-			}
-			elseif (self::$returnType == 'html') {
+			} elseif (self::$returnType == 'html') {
 				$return .= '</span>';
 			}
-		}
-		else {
+		} else {
 			$return = $string;
 		}
 

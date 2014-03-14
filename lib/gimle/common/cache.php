@@ -110,8 +110,7 @@ class Cache {
 
 		if (isset(System::$config[$this->configBlock]['chmod']['dir'])) {
 			$chmod = System::$config[$this->configBlock]['chmod']['dir'];
-		}
-		else {
+		} else {
 			$chmod = 0777;
 		}
 		$dirname = dirname($this->filename) . DIRECTORY_SEPARATOR;
@@ -121,8 +120,7 @@ class Cache {
 		if ((!is_writable($dirname)) || (!is_readable($dirname))) {
 			$return = false;
 			trigger_error('Access to cache dir "' . $dirname . '" fail.', E_USER_WARNING);
-		}
-		else {
+		} else {
 			file_put_contents($this->filename, $content);
 			if (isset(System::$config[$this->configBlock]['chmod']['file'])) {
 				chmod($this->filename, System::$config[$this->configBlock]['chmod']['file']);
@@ -162,8 +160,7 @@ class Cache {
 				$basePath = TEMP_DIR;
 			}
 			$this->prepend = $basePath . substr(SITE_DIR, strrpos(rtrim(SITE_DIR, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR) + 1);
-		}
-		else {
+		} else {
 			if (!isset($basePath)) {
 				$basePath = '';
 			}
@@ -176,8 +173,7 @@ class Cache {
 
 		if (isset(System::$config[$this->configBlock]['chmod']['dir'])) {
 			$chmod = System::$config[$this->configBlock]['chmod']['dir'];
-		}
-		else {
+		} else {
 			$chmod = 0777;
 		}
 		if (!file_exists($this->prepend)) {
