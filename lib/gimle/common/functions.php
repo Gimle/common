@@ -233,7 +233,7 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 				echo ' ' . colorize('=>', 'black', $background, $mode) . ' ' . colorize($class->getName() . ' Object (Iterator)' . $parents, 'gray', $background, $mode) . "\n" . str_repeat($doDump_indent, $indent) . colorize('(', 'lightgray', $background, $mode) . "\n";
 				var_dump($var);
 			} else {
-				echo ' ' . colorize('=>', 'black', $background, $mode) . ' ' . colorize($class->getName() . ' Object' . $parents , 'gray', $background, $mode) . "\n" . str_repeat($doDump_indent, $indent) . colorize('(', 'lightgray', $background, $mode) . "\n";
+				echo ' ' . colorize('=>', 'black', $background, $mode) . ' ' . colorize($class->getName() . ' Object' . $parents, 'gray', $background, $mode) . "\n" . str_repeat($doDump_indent, $indent) . colorize('(', 'lightgray', $background, $mode) . "\n";
 
 				$dblcheck = array();
 				foreach ((array)$var as $key => $value) {
@@ -280,11 +280,12 @@ function var_dump ($var, $return = false, $title = false, $background = false, $
 							$value = $prop->getValue();
 							$append .= ' static';
 						} else {
-							set_error_handler(function ($errno, $errstr) { throw new \Exception($errstr); });
+							set_error_handler(function ($errno, $errstr) {
+								throw new \Exception($errstr);
+							});
 							try {
 								$value = $prop->getValue($var);
-							}
-							catch (\Exception $e) {
+							} catch (\Exception $e) {
 								$value = $e->getMessage();
 								$append .= ' error';
 								$error = true;
@@ -785,20 +786,15 @@ function colorize ($content, $color, $background = false, $mode = 'auto', $getSt
 			} elseif ($climode) {
 				if ($state < 0.1) {
 					return sprintf($template, '38;5;2', $state);
-				}
-				elseif ($state < 0.25) {
+				} elseif ($state < 0.25) {
 					return sprintf($template, '38;5;118', $state);
-				}
-				elseif ($state < 0.4) {
+				} elseif ($state < 0.4) {
 					return sprintf($template, '38;5;148', $state);
-				}
-				elseif ($state < 0.5) {
+				} elseif ($state < 0.5) {
 					return sprintf($template, '38;5;220', $state);
-				}
-				elseif ($state < 0.6) {
+				} elseif ($state < 0.6) {
 					return sprintf($template, '38;5;220', $state);
-				}
-				elseif ($state < 0.8) {
+				} elseif ($state < 0.8) {
 					return sprintf($template, '38;5;178', $state);
 				}
 				return sprintf($template, '38;5;166', $state);
@@ -986,7 +982,7 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 			$reload = true;
 		}
 		if ($xpath !== false) {
- 			$return['reply'] = simplexml_load_string($cache->get());
+			$return['reply'] = simplexml_load_string($cache->get());
 			$expire = $return['reply']->xpath($xpath);
 			if ((is_array($expire)) && (!empty($expire))) {
 				$expire = (string)$expire[0];
@@ -1137,14 +1133,14 @@ function get_html_translation_table ($append = array())
 		$table = array_merge($table, $html5);
 	}
 
- 	/* Additional entities */
- 	$table['&ap;']     = '≈';
- 	$table['&there;']  = '∴';
- 	$table['&lsquor;'] = '‚';
- 	$table['&rdquor;'] = '„';
- 	$table['&dash;']   = '‐';
- 	$table['&lsqb;']   = '[';
- 	$table['&verbar;'] = '|';
+	/* Additional entities */
+	$table['&ap;']     = '≈';
+	$table['&there;']  = '∴';
+	$table['&lsquor;'] = '‚';
+	$table['&rdquor;'] = '„';
+	$table['&dash;']   = '‐';
+	$table['&lsqb;']   = '[';
+	$table['&verbar;'] = '|';
 
 	/* Add custom entities if provided */
 	if (!empty($append)) {
