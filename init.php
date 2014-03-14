@@ -10,7 +10,23 @@
 
 namespace gimle\common;
 
-session_start();
+if (isset($config['stateless'])) {
+	if ($config['stateless'] === false) {
+		session_start();
+	} elseif (defined('BASE_PATH_KEY')) {
+		if (is_array($config['stateless'])) {
+			if (!in_array(BASE_PATH_KEY, $config['stateless'])) {
+				session_start();
+			}
+		} elseif (is_string($config['stateless'])) {
+			if ($config['stateless'] !== BASE_PATH_KEY) {
+				session_start();
+			}
+		}
+	}
+} else {
+	session_start();
+}
 
 require __DIR__ . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, __NAMESPACE__) . DIRECTORY_SEPARATOR . 'system.php';
 
