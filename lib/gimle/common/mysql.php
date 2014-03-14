@@ -85,11 +85,9 @@ class Mysqlicore extends \mysqli {
 	public function cache ($mode = null) {
 		if ($mode === true) {
 			return parent::query("SET SESSION query_cache_type = ON;");
-		}
-		elseif ($mode === false) {
+		} elseif ($mode === false) {
 			return parent::query("SET SESSION query_cache_type = OFF;");
-		}
-		else {
+		} else {
 			return parent::query("SHOW VARIABLES LIKE 'query_cache_type';")->fetch_assoc();
 		}
 	}
@@ -126,8 +124,7 @@ class Mysqlicore extends \mysqli {
 	public function explain () {
 		if (!isset(System::$config['common']['background'])) {
 			$background = 'white';
-		}
-		else {
+		} else {
 			$background = System::$config['common']['background'];
 		}
 
@@ -153,8 +150,7 @@ class Mysqlicore extends \mysqli {
 				$return .= '<table border="1" style="font-size: 12px; width: 100%; border-collapse: collapse;">';
 				$return .= '<tr><td colspan="12" style="font-family: monospace; font-size: 11px;' . $textcolor . '">' . $query['query'] . '</td></tr>';
 				$return .= '<tr><td colspan="12"' . $textstyle . '>Affected rows: ' . $query['rows'] . ', Query Time: ' . $query['time'] . '</td></tr><tr>';
-			}
-			else {
+			} else {
 				$return .= colorize($query['query'], 'black', $background) . "\n";
 				$return .= colorize('Affected rows: ' . $query['rows'] . ', Query Time: ' . $query['time'], 'black', $background) . "\n";
 			}
@@ -167,8 +163,7 @@ class Mysqlicore extends \mysqli {
 				foreach ($fields as $field) {
 					if (ENV_LEVEL & ENV_WEB) {
 						$return .= '<th' . $textstyle . '>' . $field->name . '</th>';
-					}
-					else {
+					} else {
 						$fieldsarray[] = $field->name;
 					}
 				}
@@ -184,8 +179,7 @@ class Mysqlicore extends \mysqli {
 							$thiscount = (($value === null) ? 4 : strlen($value));
 							if (isset($charcount[$key])) {
 								$charcount[$key] = max($thiscount, $charcount[$key]);
-							}
-							else {
+							} else {
 								$charcount[$key] = max($thiscount, strlen($fieldsarray[$i]));
 							}
 							$subrowarray[$key] = $value;
@@ -203,15 +197,12 @@ class Mysqlicore extends \mysqli {
 				if ((ENV_LEVEL & ENV_WEB) && ($temp === '')) {
 					if (preg_match('/^SELECT/i', $query['query']) > 0) {
 						$return .= '<tr><td colspan="12"' . $errstyle . '>Erronymous query.' . '</td></tr>';
-					}
-					else {
+					} else {
 						$return .= '<tr><td colspan="12"' . $errstyle . '>Unknown query.' . '</td></tr>';
 					}
-				}
-				elseif (ENV_LEVEL & ENV_WEB) {
+				} elseif (ENV_LEVEL & ENV_WEB) {
 					$return .= $temp;
-				}
-				elseif (!empty($rowarray)) {
+				} elseif (!empty($rowarray)) {
 					$return .= '+';
 					foreach ($charcount as $value) {
 						$return .= str_repeat('-', $value + 2) . '+';
@@ -235,31 +226,25 @@ class Mysqlicore extends \mysqli {
 						$return .= str_repeat('-', $value + 2) . '+';
 					}
 					$return .= "\n";
-				}
-				else {
+				} else {
 					if (preg_match('/^SELECT/i', $query['query']) > 0) {
 						$return .= colorize('Erronymous query.', 'error', $background) . "\n";
-					}
-					else {
+					} else {
 						$return .= colorize('Unknown query.', 'error', $background) . "\n";
 					}
 				}
-			}
-			elseif ($query['error'] !== false) {
+			} elseif ($query['error'] !== false) {
 				if (ENV_LEVEL & ENV_WEB) {
 					$return .= '<tr><td colspan="12"' . $errstyle . '>Error (' . $query['error']['errno'] . '): ' . $query['error']['error'] . '</td></tr>';
-				}
-				else {
+				} else {
 					$return .= colorize('Error (' . $query['error']['errno'] . '): ' . $query['error']['error'], 'error', $background) . "\n";
 				}
-			}
-			elseif (ENV_LEVEL & ENV_WEB) {
+			} elseif (ENV_LEVEL & ENV_WEB) {
 				$return .= $temp;
 			}
 			if (ENV_LEVEL & ENV_WEB) {
 				$return .= '</table><br>';
-			}
-			else {
+			} else {
 				$return .= "\n";
 			}
 		}
@@ -280,8 +265,7 @@ class Mysqlicore extends \mysqli {
 	private function debug_backtrace ($function) {
 		if (ini_get('html_errors') === '') {
 			$template = ' in %s on line %s';
-		}
-		else {
+		} else {
 			$template = ' in <b>%s</b> on line <b>%s</b>';
 		}
 		$backtrace = debug_backtrace();
@@ -343,11 +327,9 @@ class Mysqliresult {
 
 		foreach ($result as $key => $value) {
 			if ($result[$key] === null) {
-			}
-			elseif (in_array($finfo[$key], array(1, 2, 3, 8, 9))) {
+			} elseif (in_array($finfo[$key], array(1, 2, 3, 8, 9))) {
 				$result[$key] = (int)$result[$key];
-			}
-			elseif (in_array($finfo[$key], array(4, 5, 246))) {
+			} elseif (in_array($finfo[$key], array(4, 5, 246))) {
 				$result[$key] = (float)$result[$key];
 			}
 		}
