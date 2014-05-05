@@ -610,7 +610,7 @@ function run_bg_status ($store)
 {
 	if (file_exists($store)) {
 		$pid = (int)trim(file_get_contents($store . 'pid'));
-		$exec = file_get_contents($store . 'exec');
+		$exec = str_replace(array('"', '\\'), '', file_get_contents($store . 'exec'));
 
 		exec('ps ' . $pid, $ps);
 		$running = false;
