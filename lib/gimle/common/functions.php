@@ -19,7 +19,7 @@ namespace gimle\common;
  */
 function clear_dir ($path, $deleteRoot = false)
 {
-	$files = glob(rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '*');
+	$files = glob(rtrim(str_replace('\\', '\\\\', $path), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '*');
 	foreach ($files as $file) {
 		if ((is_dir($file)) && (!is_link($file))) {
 			clear_dir($file, true);
