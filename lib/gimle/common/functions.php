@@ -965,10 +965,12 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 				if ($res === true) {
 					$validation = true;
 					$cache->put($cacheStr);
-				} elseif (is_string($res)) {
-					$validation = true;
+				} else {
 					$return['reply'] = $res;
-					$cache->put($res);
+					if ($res !== false) {
+						$validation = true;
+						$cache->put($res);
+					}
 				}
 			} else {
 				$cache->put($cacheStr);
@@ -1013,20 +1015,18 @@ function get_xml ($url, $ttl = 600, $xpath = false, $post = false, $headers = fa
 					$callback = $return;
 					$callback['reply'] = $simplexml;
 					$res = $validationCallback($callback);
-					$return['validation'] = $res;
 					$validation = false;
 					if ($res === true) {
 						$validation = true;
-						$cacheHit = false;
 						$cache->put($return['reply']);
-					} elseif (is_string($res)) {
-						$validation = true;
-						$cacheHit = false;
+					} else {
 						$return['reply'] = $res;
-						$cache->put($res);
+						if ($res !== false) {
+							$validation = true;
+							$cache->put($res);
+						}
 					}
 				} else {
-					$cacheHit = false;
 					$cache->put($return['reply']);
 				}
 				$return['reply'] = $simplexml;
