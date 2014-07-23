@@ -601,6 +601,24 @@ function run_bg ($command)
 }
 
 /**
+ * Get all the jobs.
+ *
+ * @return array
+ */
+function run_bg_jobs ()
+{
+	$return = array();
+	foreach (new \DirectoryIterator(TEMP_DIR . 'php_run_bg') as $fileInfo) {
+		$fileName = $fileInfo->getFilename();
+		if (substr($fileName, 0, 1) === '.') {
+			continue;
+		}
+		$return[] = TEMP_DIR . 'php_run_bg/' . $fileName . '/';
+	}
+	return $return;
+}
+
+/**
  * Get the status of a background process.
  *
  * @param string $store
