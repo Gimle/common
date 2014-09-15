@@ -8,7 +8,7 @@ trait Singelton
 	public static function getInstance ()
 	{
 		if (self::$instance === false) {
-			$me = get_class();
+			$me = get_called_class();
 			$args = func_get_args();
 			if (!empty($args)) {
 				// @todo: Would be nice to pass the calling arguments as called, but that does not seem to work.
