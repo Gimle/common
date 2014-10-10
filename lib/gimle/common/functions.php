@@ -608,12 +608,14 @@ function run_bg ($command)
 function run_bg_jobs ()
 {
 	$return = array();
-	foreach (new \DirectoryIterator(TEMP_DIR . 'php_run_bg') as $fileInfo) {
-		$fileName = $fileInfo->getFilename();
-		if (substr($fileName, 0, 1) === '.') {
-			continue;
+	if (is_readable(TEMP_DIR . 'php_run_bg')) {
+		foreach (new \DirectoryIterator(TEMP_DIR . 'php_run_bg') as $fileInfo) {
+			$fileName = $fileInfo->getFilename();
+			if (substr($fileName, 0, 1) === '.') {
+				continue;
+			}
+			$return[] = TEMP_DIR . 'php_run_bg/' . $fileName . '/';
 		}
-		$return[] = TEMP_DIR . 'php_run_bg/' . $fileName . '/';
 	}
 	return $return;
 }
@@ -628,7 +630,7 @@ function run_bg_status ($store)
 {
 	if (file_exists($store)) {
 		$pid = (int)trim(file_get_contents($store . 'pid'));
-		$exec = str_replace(array('é'), '??', str_replace(array('"', '\\'), '', file_get_contents($store . 'exec')));
+		$exec = str_replace(array('é', 'æ', 'ø', 'å', 'Æ', 'Ø', 'Å'), '??', str_replace(array('"', '\\'), '', file_get_contents($store . 'exec')));
 
 		exec('ps ' . $pid, $ps);
 		$running = false;
