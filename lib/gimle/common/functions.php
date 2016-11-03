@@ -1210,8 +1210,12 @@ function ent2utf8 ($string, $exclude = array('&', ';'), $append = array())
 	}
 	$string = strtr($string, $html_translation_table);
 
-	$string = preg_replace('/&#x([0-9a-f]+);/ei', '\\' . __NAMESPACE__ . '\\code2utf8(hexdec("\\1"))', $string);
-	$string = preg_replace('/&#([0-9]+);/e', '\\' . __NAMESPACE__ . '\\code2utf8(\\1)', $string);
+	$string = preg_replace_callback('/&#x([0-9a-f]+);/i', function ($param) {
+		return code2utf8(hexdec($param[1]));
+	}, $string);
+	$string = preg_replace_callback('/&#([0-9]+);/', function ($param) {
+		return code2utf8($param[1]);
+	}, $string);
 
 	return $string;
 }
